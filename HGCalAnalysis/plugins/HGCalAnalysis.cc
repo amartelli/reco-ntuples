@@ -65,6 +65,7 @@ private:
 
   edm::EDGetTokenT<HGCRecHitCollection> _recHitsEE;
   edm::EDGetTokenT<HGCRecHitCollection> _recHitsHE;
+  edm::EDGetTokenT<HGCRecHitCollection> _recHitsHEB;
   edm::EDGetTokenT<reco::CaloClusterCollection> _clusters;
   edm::EDGetTokenT<std::vector<TrackingVertex> > _vtx;
   edm::EDGetTokenT<std::vector<TrackingParticle> > _part;
@@ -100,16 +101,25 @@ HGCalAnalysis::HGCalAnalysis(const edm::ParameterSet& iConfig) :
   usesResource("TFileService");
 
 
-  if(detector=="both"){
+  if(detector=="all"){
+    _recHitsEE = consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit","HGCEERecHits"));
+    _recHitsHE = consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit","HGCHEFRecHits"));
+    _recHitsHEB = consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit","HGCHEBRecHits"));
+    algo = 0;
+  }
+  else if(detector=="both"){
     _recHitsEE = consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit","HGCEERecHits"));
     _recHitsHE = consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit","HGCHEFRecHits"));
     algo = 1;
   }else if(detector=="EE"){
     _recHitsEE = consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit","HGCEERecHits"));
     algo = 2;
-  }else{
+  }else if(detector=="HE"){
     _recHitsHE = consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit","HGCHEFRecHits"));
     algo = 3;
+  }else{
+    _recHitsHEB = consumes<HGCRecHitCollection>(edm::InputTag("HGCalRecHit","HGCHEBRecHits"));
+    algo = 4;
   }
   _clusters = consumes<reco::CaloClusterCollection>(edm::InputTag("imagingClusterHGCal"));
   _vtx = consumes<std::vector<TrackingVertex> >(edm::InputTag("mix","MergedTrackTruth"));
@@ -178,6 +188,7 @@ HGCalAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   Handle<HGCRecHitCollection> recHitHandleEE;
   Handle<HGCRecHitCollection> recHitHandleHE;
+  Handle<HGCRecHitCollection> recHitHandleHEB;
   Handle<reco::CaloClusterCollection> clusterHandle;
 
   std::vector<HGCalMultiCluster> multiClusters;
@@ -227,6 +238,25 @@ HGCalAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   //make a map detid-rechit
   std::map<HGCalDetId,const HGCRecHit*> hitmap;
   switch(algo){
+  case 0:
+    {
+      iEvent.getByToken(_recHitsEE,recHitHandleEE);
+      iEvent.getByToken(_recHitsHE,recHitHandleHE);
+      iEvent.getByToken(_recHitsHEB,recHitHandleHEB);
+      const HGCRecHitCollection& rechitsEE = *recHitHandleEE;
+      const HGCRecHitCollection& rechitsHE = *recHitHandleHE;
+      const HGCRecHitCollection& rechitsHEB = *recHitHandleHEB;
+      for(unsigned int i = 0; i < rechitsEE.size(); i++){
+	hitmap[HGCalDetId(rechitsEE[i].detid())] = &rechitsEE[i];
+      }
+      for(unsigned int i = 0; i < rechitsHE.size(); i++){
+	hitmap[HGCalDetId(rechitsHE[i].detid())] = &rechitsHE[i];
+      }
+      for(unsigned int i = 0; i < rechitsHEB.size(); i++){
+	hitmap[HGCalDetId(rechitsHEB[i].detid())] = &rechitsHEB[i];
+      }
+      break;
+    }
   case 1:
     {
       iEvent.getByToken(_recHitsEE,recHitHandleEE);
@@ -259,9 +289,19 @@ HGCalAnalysis::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       break;
     }
+  case 4:
+    {
+      iEvent.getByToken(_recHitsHEB,recHitHandleHEB);
+      const HGCRecHitCollection& rechitsHEB = *recHitHandleHEB;
+      for(unsigned int i = 0; i < rechitsHEB.size(); i++){
+        hitmap[HGCalDetId(rechitsHEB[i].detid())] = &rechitsHEB[i];
+      }
+      break;
+    }
   default:
     break;
   }
+
 
   // dump raw RecHits
   if (rawRecHits) {
