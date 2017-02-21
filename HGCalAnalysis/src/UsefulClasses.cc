@@ -5,7 +5,7 @@
 // #include "TH1.h"
 // #include "TCanvas.h"
 
-#include "HGCalCalibration/HitValidation/interface/UsefulClasses.h"
+#include "RecoNtuples/HGCalAnalysis/interface/UsefulClasses.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 
 // using std::string;

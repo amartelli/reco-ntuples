@@ -12,7 +12,7 @@
 #include "RecoNtuples/HGCalAnalysis/interface/AEvent.h"
 #include "RecoNtuples/HGCalAnalysis/interface/AObData.h"
 
-#include "HGCalCalibration/HitValidation/interface/NumberToString.h"
+#include "RecoNtuples/HGCalAnalysis/interface/NumberToString.h"
 
 using namespace std;
 
