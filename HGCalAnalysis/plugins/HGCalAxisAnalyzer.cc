@@ -49,7 +49,7 @@
 //#include "RecoNtuples/HGCalAxisAnalyzer/interface/AEvent.h"
 //#include "RecoNtuples/HGCalAxisAnalyzer/interface/AObData.h"
 
-#include "HGCalCalibration/HitValidation/interface/UsefulClasses.h"
+#include "RecoNtuples/HGCalAnalysis/interface/UsefulClasses.h"
 //#include "../utils/UsefulClasses.cpp"
 
 #include <string>
@@ -80,7 +80,7 @@ private:
   edm::EDGetTokenT<std::vector<TrackingParticle> > _part;
   //  edm::EDGetTokenT<std::vector<SimCluster> > _simClusters;
   edm::EDGetTokenT<std::vector<CaloParticle> > _caloParticles;
-  //  edm::EDGetTokenT<reco::CaloClusterCollection> _clusters;
+  edm::EDGetTokenT<reco::CaloClusterCollection> _clusters;
   edm::EDGetTokenT<std::vector<reco::HGCalMultiCluster> > _multiClusters;
 
   std::string                detector;
@@ -100,120 +100,105 @@ private:
   TH1F* h_Vtx_dvy;
   TH1F* h_Vtx_dvz;
 
+  TH2F* h3_bary_yz;
+  TH2F* h3_bary_xz;
+  TH2F* h3_seed_yz;
+  TH2F* h3_seed_xz;
+  TH2F* h3_2dCl_yz;
+  TH2F* h3_2dCl_xz;
+  //  TH3* h3_2dCl_xyz;
 
   std::vector<int> nHits_layer;
   std::vector<int> nHitsWithTime_layer;
 
   //  TH1F* h_numberOfMC;
   TH1F* h_energyFractionInMC;
-  //  TH2F* h2_energyFractionInMC_vs_VtxZ;
+  TH1F* h_energyFractionInBestMC;
+  TH1F* h_energyFractionInSelectedMC;
+  TH1F* h_EfracMCl_wrt_Best;
+  TH1F* h_EfracSelectedMCl_wrt_Best;
+
   TH2F* h2_dPhiMCtoGen_vsPt;
   TH1F* h_dPhiMCtoGen;
-  TH1F* h_dR_SeedCl2_multiCl;
-  TH2F* h2_dR_SeedCl2_multiCl_vsLayerS2d;
+
   TH2F* h2_dR_SeedCl2_multiCl_vsEta;
   TProfile* tp_dR_SeedCl2_multiCl_vsEta;
+  //  TH2F* h2_dR_SeedCl2_multiCl_vsLayerS2d;
+  TH1F* h_dR_SeedCl2_multiCl;
+
+  TH2F* h_nMCvsnum2dClBestMC;
   TH1F* h_n2dClPerMC;
+  TH1F* h_deltaLayer_2dClPerMC;
+  TH2F* h2_deltaLayer_n2dClPerMC_vs_2dClPerMC;
+  TH2F* h2_deltaLayer_n2dClPerMC_vs_2dClEnergy;
+
   TH1F* h_nMCPerEvt;
 
-  TH2F* h2_cellRadius_vsThick;
+  TH2F* h2_dPhi2DCltoGen_vsPt;
+  TH1F* h_dPhi2DCltoGen;
+  TH1F* h_dR_2DCl_multiCl;
+  TH1F* h_dR_2DCl_Gen;
 
-  TH1F* h_EfracMCl_wrt_Best;
-
-  //  TH1F* h_allhitFractionRHWithTimeinRing_wrtGen[6];
-  TH1F* h_allhitAverageTimeinRing_wrtGen[6];
-  TH1F* h_allhitTimeinRing_wrtGen[6];
-  TH1F* h_allhitTimeinRing_wrtGen_fixL[6];
-
-  TH1F* h_hitTimeinRing_wrtGen[6];
-  TH1F* h_hitTimeinRing_wrtMCl[6];
-  TH2F* h2_hitTimeinRing_wrtGen_vsL;
-
-  TH1F* h_hitTimeinRing_wrtGen_fixL[6];
-  TH1F* h_hitTimeinRing_wrtMCl_fixL[6];
-  TH2F* h2_hitTimeinRing_wrtGen_vsL_fixL;
-
-  TH1F* h_allRH_TimesOfRadius;
-  TH1F* h_allRH_TimesOfRadius_fixL;
-
-  TH2F* h2_allRH_TimesVsDRaxis;
-  TProfile* tp_allRH_TimesVsDRaxis;
-  TH2F* h2_allRH_TimesVsDEPaxis;
-  TProfile* tp_allRH_TimesVsDEPaxis;
-  TH2F* h2_allRH_TimesVsDRaxis_fixL;
-  TProfile* tp_allRH_TimesVsDRaxis_fixL;
-
-
-  TProfile2D* dPhivsDEta_Time;
-  TProfile2D* dRvsDZ_Time;
-
-  TH2F* h2_allRH_TimesVsRadiusaxis;
-  TProfile* tp_allRH_TimesVsRadiusaxis;
-  TH2F* h2_allRH_TimesVsRadiusaxis_fixL;
-  TProfile* tp_allRH_TimesVsRadiusaxis_fixL;
-
+  TH1F* h_2DClSumE_overMCE;
   TH1F* h_2DClSumE;
+  TH2F* h2_2DClSumE_vsVtxZ;
+  TProfile* tp_2DClSumE_vsVtxZ;
+
   TProfile* tp_2DClSumE_vsDR_wrtGen;
   TProfile* tp_2DClSumE_vsDR_wrtMCl;
   TProfile* tp_2DClSumE_vsRadius_wrtGen;
   TProfile* tp_2DClSumE_vsRadius_wrtMCl;
 
+  //selected
+  TH2F* h2_dPhiSelMCtoGen_vsPt;
+  TH1F* h_dPhiSelMCtoGen;
+
+  TH2F* h2_dR_SeedCl2_SelmultiCl_vsEta;
+  TProfile* tp_dR_SeedCl2_SelmultiCl_vsEta;
+  //  TH2F* h2_dR_SeedCl2_SelmultiCl_vsLayerS2d;
+  TH1F* h_dR_SeedCl2_SelmultiCl;
+
+  TH2F* h_nSelMCvsnum2dClSelMC;
+  TH1F* h_n2dClPerSelMC;
+  TH1F* h_nSelMCPerEvt;
+
+  TH2F* h2_dPhi2DClSeltoGen_vsPt;
+  TH1F* h_dPhi2DClSeltoGen;
+  TH1F* h_dR_2DClSel_multiCl;
+  TH1F* h_dR_2DClSel_Gen;
+
+  //  TH1F* h_2DClSelSumE_overMCE;
+  TH1F* h_2DClSelSumE;
+  TProfile* tp_2DClSelSumE_vsDR_wrtGen;
+  TProfile* tp_2DClSelSumE_vsDR_wrtMCl;
+  TProfile* tp_2DClSelSumE_vsRadius_wrtGen;
+  TProfile* tp_2DClSelSumE_vsRadius_wrtMCl;
+  //
+  TH1F* h_2DClSelConsSumE;
+  TProfile* tp_2DClSelConsSumE_vsRadius_wrtGen;
+  TProfile* tp_2DClSelConsSumE_vsRadius_wrtMCl;
+
+  TH2F* h2_dPhiMatchHittoGen_vsPt;
+  TH1F* h_dPhiMatchHittoGen;
+
+  TH1F* h_dR_MatchHit_Gen;
+
   TH1F* h_mtcRHSumE;
   TProfile* tp_mtcRHSumE_vsDR_wrtGen;
-  //  TProfile* tp_mtcRHSumE_vsDR_wrtMCl;
   TProfile* tp_mtcRHSumE_vsRadius_wrtGen;
-  //  TProfile* tp_mtcRHSumE_vsRadius_wrtMCl;
-
-  TH1F* h_dEta_pos;
-  TH1F* h_dPhi_pos;
-  TH1F* h_dEta_neg;
-  TH1F* h_dPhi_neg;
-
-  TH1F* h_numRhPerEvt_vsdR;
-  TH1F* h_rHGen_dR;
-  TH2F* h2_rHGen_dR_vsEta;
-  TH1F* h_rHGen_dDist;
-  TH2F* h2_rHGen_dDist_vsEta;
-  TProfile* tp_rHGen_dDist_vsEta;
-  TH2F* h2_Energia_vsEta;
-  TH2F* h2_Pt_vsEta;
-  TH1F* h_rHGen_dR_fixL;
-  TH2F* h2_rHGen_dR_vsEnergia;
-  TH2F* h2_rHGen_dR_vsPt;
-  TH2F* h2_rHGen_dRcosh_vsEta;
-  TH2F* h2_rHGen_dRcoshP_vsEta;
-
-  TProfile2D* tp2_Energy_vs_Eta_dR;
-  TProfile2D* tp2_Energy_vs_Eta_dDist;
-
 
   TH2F* h2_dPhivsdEta_rhGen;
   TH2F* h2_dPhivsdEta_rhGen_fixL;
   TH2F* h2_dPhivsdEta_rhAxis;
   TH2F* h2_dPhivsdEta_GenAxis;
 
-  //eta bins 1.7-1.9   1.9-2.1 - 2.1-2.3   2.3-2.5 
-  TH1F* h_rhGen_Radius_Eta[8];
-  TH1F* h_rhGen_RadiusDdeta_Eta[8];
-  TH1F* h_rhGen_RadiusPdeta_Eta[8];
-  TH1F* hAverageTime_Eta_dRadius[8][3];
-  TH1F* hAverageTime_Eta_dRadius_fixL[8][2];
 
-  TH1F* hTotHits_Eta_dRadius[8][3];
-  TH1F* hTotHitsWithTime_Eta_dRadius[8][3];
-  TH1F* hFractionHitsWithTime_Eta_dRadius[8][3];
-  TH1F* hFractionEvents_HitsWithTime_Eta_dRadius[8][3];
-  TProfile* tpFractionHitsWithTime_Eta_dRadius_vsPt[8][3];
-  TH1F* hTotHits_Eta_dRadius_fixL[8][2];
-  TH1F* hTotHitsWithTime_Eta_dRadius_fixL[8][2];
-  TH1F* hFractionHitsWithTime_Eta_dRadius_fixL[8][2];
-
-
-  int totEvtsEtaRadius[8][3];
-  int totEvtsEtaRadius_withTime[8][3];
-
-
-  float radiusEtaRad[8][3];
+  /*  
+  TH1F* h_dEta_pos;
+  TH1F* h_dPhi_pos;
+  TH1F* h_dEta_neg;
+  TH1F* h_dPhi_neg;
+  */
 };  
 
 
@@ -245,7 +230,7 @@ HGCalAxisAnalyzer::HGCalAxisAnalyzer(const edm::ParameterSet& iConfig) :
   _part = consumes<std::vector<TrackingParticle> >(edm::InputTag("mix","MergedTrackTruth"));
   //  _simClusters = consumes<std::vector<SimCluster> >(edm::InputTag("mix","MergedCaloTruth"));
   _caloParticles = consumes<std::vector<CaloParticle> >(edm::InputTag("mix","MergedCaloTruth"));
-  //  _clusters = consumes<reco::CaloClusterCollection>(edm::InputTag("hgcalLayerClusters"));
+  _clusters = consumes<reco::CaloClusterCollection>(edm::InputTag("hgcalLayerClusters"));
   _multiClusters = consumes<std::vector<reco::HGCalMultiCluster> >(edm::InputTag("hgcalLayerClusters"));
 
 
@@ -264,191 +249,106 @@ HGCalAxisAnalyzer::HGCalAxisAnalyzer(const edm::ParameterSet& iConfig) :
   h_Vtx_dvy = fs->make<TH1F>("h_Vtx_dvy", "", 1000, -10., 10.);
   h_Vtx_dvz = fs->make<TH1F>("h_Vtx_dvz", "", 1000, -10., 10.);
 
-  //  LayerOccupancy = fs->make<TH1F>("LayerOccupancy", "", 60, 0., 60.);
+  h3_bary_xz = fs->make<TH2F>("h3_bary_xz", "",  1000, 250., 650., 1000, -100., 100.);
+  h3_bary_yz = fs->make<TH2F>("h3_bary_yz", "",  1000, 250., 650., 1000, -100., 100.);
+  h3_seed_xz = fs->make<TH2F>("h3_seed_xz", "",  1000, 250., 650., 1000, -100., 100.);
+  h3_seed_yz = fs->make<TH2F>("h3_seed_yz", "",  1000, 250., 650., 1000, -100., 100.);
+  h3_2dCl_xz = fs->make<TH2F>("h3_2dCl_xz", "",  1000, 250., 650., 1000, -100., 100.);
+  h3_2dCl_yz = fs->make<TH2F>("h3_2dCl_yz", "",  1000, 250., 650., 1000, -100., 100.);
+  //  h3_2dCl_xyz = fs->make<TH3>("h3_2dCl_xyz", "",  1000, 200., 500., 1000, -100., 100., 1000, -100., 100.);
 
-  //  h_numberOfMC = fs->make<TH1F>("h_numberOfMC", "", 60, 0., 60.);
   h_energyFractionInMC = fs->make<TH1F>("h_energyFractionInMC", "", 1000, 0., 2.);
-  //  h2_energyFractionInMC_vs_VtxZ = fs->make<TH2F>("h2_energyFractionInMC_vs_VtxZ", "", 1000, -1., 1., 100, 0., 1.);
+  h_energyFractionInBestMC = fs->make<TH1F>("h_energyFractionInBestMC", "", 1000, 0., 2.);
+  h_energyFractionInSelectedMC = fs->make<TH1F>("h_energyFractionInSelectedMC", "", 1000, 0., 2.);
+  h_EfracMCl_wrt_Best = fs->make<TH1F>("h_EfracMCl_wrt_Best", "", 500, 0., 1.1);
+  h_EfracSelectedMCl_wrt_Best = fs->make<TH1F>("h_EfracSelectedMCl_wrt_Best", "", 500, 0., 1.1);
+
   h2_dPhiMCtoGen_vsPt = fs->make<TH2F>("h2_dPhiMCtoGen_vsPt", "", 300, 0., 300., 600, -0.3, 0.3);
   h_dPhiMCtoGen = fs->make<TH1F>("h_dPhiMCtoGen", "", 600, -3., 3.);
 
   h_dR_SeedCl2_multiCl = fs->make<TH1F>("h_dR_SeedCl2_multiCl", "", 1000, 0., 3.);
-  h2_dR_SeedCl2_multiCl_vsLayerS2d = fs->make<TH2F>("h2_dR_SeedCl2_multiCl_vsLayerS2d", "", 100, 0., 100., 1000, 0., 5.);
+  //  h2_dR_SeedCl2_multiCl_vsLayerS2d = fs->make<TH2F>("h2_dR_SeedCl2_multiCl_vsLayerS2d", "", 100, 0., 100., 1000, 0., 5.);
   h2_dR_SeedCl2_multiCl_vsEta = fs->make<TH2F>("h2_dR_SeedCl2_multiCl_vsEta", "", 500, 1.5, 3.5, 1000, 0., 5.);
   tp_dR_SeedCl2_multiCl_vsEta = fs->make<TProfile>("tp_dR_SeedCl2_multiCl_vsEta", "", 500, 1.5, 3.5);
+
+  h_nMCvsnum2dClBestMC = fs->make<TH2F>("h_nMCvsnum2dClBestMC", "", 50, 0., 50., 100, 0., 100.);
   h_n2dClPerMC = fs->make<TH1F>("h_n2dClPerMC", "", 50, 0., 50.);
   h_nMCPerEvt = fs->make<TH1F>("h_nMCPerEvt", "", 100, 0., 100.);
-
-  h2_cellRadius_vsThick = fs->make<TH2F>("h2_cellRadius_vsThick", "", 500., 0., 500., 100., 0., 10.);
-
-  h_EfracMCl_wrt_Best = fs->make<TH1F>("h_EfracMCl_wrt_Best", "", 500, 0., 1.1);
-
-  for (int ij=0; ij<6; ++ij){
-    h_hitTimeinRing_wrtGen[ij] = fs->make<TH1F>(Form("h_hitTimeinRing_wrtGen_%d", ij), "", 70., -0.2, 0.5);
-    h_hitTimeinRing_wrtMCl[ij] = fs->make<TH1F>(Form("h_hitTimeinRing_wrtMCl_%d", ij), "", 70., -0.2, 0.5);
-    h_hitTimeinRing_wrtGen_fixL[ij] = fs->make<TH1F>(Form("h_hitTimeinRing_wrtGen_fixL_%d", ij), "", 70., -0.2, 0.5);
-    h_hitTimeinRing_wrtMCl_fixL[ij] = fs->make<TH1F>(Form("h_hitTimeinRing_wrtMCl_fixL_%d", ij), "", 70., -0.2, 0.5);
-    h_allhitTimeinRing_wrtGen[ij] = fs->make<TH1F>(Form("h_allhitTimeinRing_wrtGen_%d", ij), "", 70., -0.2, 0.5);
-    h_allhitTimeinRing_wrtGen_fixL[ij] = fs->make<TH1F>(Form("h_allhitTimeinRing_wrtGen_fixL_%d", ij), "", 70., -0.2, 0.5);
-    //    h_allhitFractionRHWithTimeinRing_wrtGen[ij] = fs->make<TH1F>(Form("h_allhitFractionRHWithTimeinRing_wrtGen_%d", ij), "", 70., -0.2, 0.5);
-    h_allhitAverageTimeinRing_wrtGen[ij] = fs->make<TH1F>(Form("h_allhitAverageTimeinRing_wrtGen_fixL_%d", ij), "", 70., -0.2, 0.5);
-  }
-
-  h2_hitTimeinRing_wrtGen_vsL = fs->make<TH2F>("h2_hitTimeinRing_wrtGen_vsL", "", 60., 0, 60., 70., -0.2, 0.5);
-  h2_hitTimeinRing_wrtGen_vsL_fixL = fs->make<TH2F>("h2_hitTimeinRing_wrtGen_vsL_fixL", "", 60., 0, 60., 70., -0.2, 0.5);
-
-  h_allRH_TimesOfRadius = fs->make<TH1F>("h_allRH_TimesOfRadius", "", 100., 0., 50.);
-  h_allRH_TimesOfRadius_fixL = fs->make<TH1F>("h_allRH_TimesOfRadius_fixL", "", 100., 0., 50.);
-  //  std::cout << " >>> costruito " << std::endl;
-
-  h2_allRH_TimesVsDRaxis = fs->make<TH2F>("h2_allRH_TimesVsDRaxis", "", 500, 0., 10., 70., -0.2, 0.5);;
-  tp_allRH_TimesVsDRaxis = fs->make<TProfile>("tp_allRH_TimesVsDRaxis", "", 500, 0., 10.);
-  h2_allRH_TimesVsDEPaxis = fs->make<TH2F>("h2_allRH_TimesVsDEPaxis", "", 500, 0., 10., 70., -0.2, 0.5);;
-  tp_allRH_TimesVsDEPaxis = fs->make<TProfile>("tp_allRH_TimesVsDEPaxis", "", 500, 0., 10.);
-  h2_allRH_TimesVsDRaxis_fixL = fs->make<TH2F>("h2_allRH_TimesVsDRaxis_fixL", "", 500, 0., 10., 70., -0.2, 0.5);;
-  tp_allRH_TimesVsDRaxis_fixL = fs->make<TProfile>("tp_allRH_TimesVsDRaxis_fixL", "", 500, 0., 10.);
-  h2_allRH_TimesVsRadiusaxis = fs->make<TH2F>("h2_allRH_TimesVsRadiusaxis", "", 500, 0., 10., 70., -0.2, 0.5);;
-  tp_allRH_TimesVsRadiusaxis = fs->make<TProfile>("tp_allRH_TimesVsRadiusaxis", "", 500, 0., 10.);
-  h2_allRH_TimesVsRadiusaxis_fixL = fs->make<TH2F>("h2_allRH_TimesVsRadiusaxis_fixL", "", 500, 0., 10., 70., -0.2, 0.5);;
-  tp_allRH_TimesVsRadiusaxis_fixL = fs->make<TProfile>("tp_allRH_TimesVsRadiusaxis_fixL", "", 500, 0., 10.);
-
-  dPhivsDEta_Time = fs->make<TProfile2D>("dPhivsDEta_Time", "", 500, -0.2, 0.2, 500, -0.2, 0.2);
-  dRvsDZ_Time = fs->make<TProfile2D>("dRvsDZ_Time", "", 500, 0., 5., 500., 0., 100.);
+  h_deltaLayer_2dClPerMC = fs->make<TH1F>("h_deltaLayer_2dClPerMC", "", 50, -25., 25.);
+  h2_deltaLayer_n2dClPerMC_vs_2dClPerMC = fs->make<TH2F>("h2_deltaLayer_n2dClPerMC_vs_2dClPerMC", "", 50, -25., 25., 50, 0., 50.);
+  h2_deltaLayer_n2dClPerMC_vs_2dClEnergy = fs->make<TH2F>("h2_deltaLayer_n2dClPerMC_vs_2dClEnergy", "", 50, -25., 25., 100, 0., 1.);
 
 
+  h2_dPhi2DCltoGen_vsPt = fs->make<TH2F>("h2_dPhi2DCltoGen_vsPt", "", 300, 0., 300., 600, -0.3, 0.3);
+  h_dPhi2DCltoGen = fs->make<TH1F>("h_dPhi2DCltoGen", "", 600, -3., 3.);
 
+  h_dR_2DCl_multiCl = fs->make<TH1F>("h_dR_2DCl_multiCl", "", 1000, 0., 3.);
+  h_dR_2DCl_Gen = fs->make<TH1F>("h_dR_2DCl_Gen", "", 1000, 0., 3.);
+
+  h_2DClSumE_overMCE = fs->make<TH1F>("h_2DClSumE_overMCE", "", 500, 0., 2.);  
   h_2DClSumE = fs->make<TH1F>("h_2DClSumE", "", 500, 0., 2.);
+  h2_2DClSumE_vsVtxZ = fs->make<TH2F>("h2_2DClSumE_vsVtxZ", "", 1000, -10., 10, 500, 0., 2.);
+  tp_2DClSumE_vsVtxZ = fs->make<TProfile>("tp_2DClSumE_vsVtxZ", "", 1000, -10., 10);
+
+
   tp_2DClSumE_vsDR_wrtGen = fs->make<TProfile>("tp_2DClSumE_vsDR_wrtGen", "", 5, 0., 5);
   tp_2DClSumE_vsDR_wrtMCl = fs->make<TProfile>("tp_2DClSumE_vsDR_wrtMCl", "", 5, 0., 5);
   tp_2DClSumE_vsRadius_wrtGen = fs->make<TProfile>("tp_2DClSumE_vsRadius_wrtGen", "", 5, 0., 5);
   tp_2DClSumE_vsRadius_wrtMCl = fs->make<TProfile>("tp_2DClSumE_vsRadius_wrtMCl", "", 5, 0., 5);
 
 
+  //sel
+  h2_dPhiSelMCtoGen_vsPt = fs->make<TH2F>("h2_dPhiSelMCtoGen_vsPt", "", 300, 0., 300., 600, -0.3, 0.3);
+  h_dPhiSelMCtoGen = fs->make<TH1F>("h_dPhiSelMCtoGen", "", 600, -3., 3.);
+
+  h_dR_SeedCl2_SelmultiCl = fs->make<TH1F>("h_dR_SeedCl2_SelmultiCl", "", 1000, 0., 3.);
+  //  h2_dR_SeedCl2_SelmultiCl_vsLayerS2d = fs->make<TH2F>("h2_dR_SeedCl2_SelmultiCl_vsLayerS2d", "", 100, 0., 100., 1000, 0., 5.);
+  h2_dR_SeedCl2_SelmultiCl_vsEta = fs->make<TH2F>("h2_dR_SeedCl2_SelmultiCl_vsEta", "", 500, 1.5, 3.5, 1000, 0., 5.);
+  tp_dR_SeedCl2_SelmultiCl_vsEta = fs->make<TProfile>("tp_dR_SeedCl2_SelmultiCl_vsEta", "", 500, 1.5, 3.5);
+
+  h_nSelMCvsnum2dClSelMC = fs->make<TH2F>("h_nSelMCvsnum2dClSelMC", "", 50, 0., 50., 100, 0., 100.);
+  h_n2dClPerSelMC = fs->make<TH1F>("h_n2dClPerSelMC", "", 50, 0., 50.);
+  h_nSelMCPerEvt = fs->make<TH1F>("h_nSelMCPerEvt", "", 100, 0., 100.);
+
+  h2_dPhi2DClSeltoGen_vsPt = fs->make<TH2F>("h2_dPhi2DClSeltoGen_vsPt", "", 300, 0., 300., 600, -0.3, 0.3);
+  h_dPhi2DClSeltoGen = fs->make<TH1F>("h_dPhi2DClSeltoGen", "", 600, -3., 3.);
+
+  h_dR_2DClSel_multiCl = fs->make<TH1F>("h_dR_2DClSel_multiCl", "", 1000, 0., 3.);
+  h_dR_2DClSel_Gen = fs->make<TH1F>("h_dR_2DClSel_Gen", "", 1000, 0., 3.);
+
+  //  h_2DClSelSumE_overMCE = fs->make<TH1F>("h_2DClSelSumE_overMCE", "", 500, 0., 2.);  
+  h_2DClSelSumE = fs->make<TH1F>("h_2DClSelSumE", "", 500, 0., 2.);
+  tp_2DClSelSumE_vsDR_wrtGen = fs->make<TProfile>("tp_2DClSelSumE_vsDR_wrtGen", "", 5, 0., 5);
+  tp_2DClSelSumE_vsDR_wrtMCl = fs->make<TProfile>("tp_2DClSelSumE_vsDR_wrtMCl", "", 5, 0., 5);
+  tp_2DClSelSumE_vsRadius_wrtGen = fs->make<TProfile>("tp_2DClSelSumE_vsRadius_wrtGen", "", 5, 0., 5);
+  tp_2DClSelSumE_vsRadius_wrtMCl = fs->make<TProfile>("tp_2DClSelSumE_vsRadius_wrtMCl", "", 5, 0., 5);
+  //
+
+  h_2DClSelConsSumE = fs->make<TH1F>("h_2DClSelConsSumE", "", 500, 0., 2.);
+  tp_2DClSelConsSumE_vsRadius_wrtGen = fs->make<TProfile>("tp_2DClSelConsSumE_vsRadius_wrtGen", "", 5, 0., 5);
+  tp_2DClSelConsSumE_vsRadius_wrtMCl = fs->make<TProfile>("tp_2DClSelConsSumE_vsRadius_wrtMCl", "", 5, 0., 5);
+
+
+  h2_dPhiMatchHittoGen_vsPt = fs->make<TH2F>("h2_dPhiMatchHittoGen_vsPt", "", 300, 0., 300., 600, -0.3, 0.3);
+  h_dPhiMatchHittoGen = fs->make<TH1F>("h_dPhiMatchHittoGen", "", 600, -3., 3.);
+  h_dR_MatchHit_Gen = fs->make<TH1F>("h_dR_MatchHit_Gen", "", 1000, 0., 3.);
+
+
   h_mtcRHSumE = fs->make<TH1F>("h_mtcRHSumE", "", 500, 0., 2.);
   tp_mtcRHSumE_vsDR_wrtGen = fs->make<TProfile>("tp_mtcRHSumE_vsDR_wrtGen", "", 5, 0., 5);
-  //  le* tp_mtcRHSumE_vsDR_wrtMCl
   tp_mtcRHSumE_vsRadius_wrtGen = fs->make<TProfile>("tp_mtcRHSumE_vsRadius_wrtGen", "", 5, 0., 5);
-  //  le* tp_mtcRHSumE_vsRadius_wrtMCl;
 
-
-  h_dEta_pos = fs->make<TH1F>("h_dEta_pos", "", 500, -0.1, 0.1);
-  h_dPhi_pos = fs->make<TH1F>("h_dPhi_pos", "", 500, -0.1, 0.1);
-  h_dEta_neg = fs->make<TH1F>("h_dEta_neg", "", 500, -0.1, 0.1);
-  h_dPhi_neg = fs->make<TH1F>("h_dPhi_neg", "", 500, -0.1, 0.1);
-
-
-  h_rHGen_dR = fs->make<TH1F>("h_rHGen_dR", "", 1000., 0., 5.);
-  h_rHGen_dDist = fs->make<TH1F>("h_rHGen_dDist", "", 1000., 0., 10.);
-  h2_rHGen_dR_vsEta = fs->make<TH2F>("h2_rHGen_dR_vsEta", "", 500., 1.5, 3., 1000., 0., 5.);
-  h2_rHGen_dDist_vsEta = fs->make<TH2F>("h2_rHGen_dDist_vsEta", "", 500., 1.5, 3., 1000., 0., 10.);
-  tp_rHGen_dDist_vsEta = fs->make<TProfile>("tp_rHGen_dDist_vsEta", "", 500., 1.5, 3.);
-  h_rHGen_dR_fixL = fs->make<TH1F>("h_rHGen_dR_fixL", "", 1000., 0., 5.);
-  h2_Energia_vsEta = fs->make<TH2F>("h2_Energia_vsEta", "", 500., 1.5, 3., 1000, 0., 1000);
-  h2_Pt_vsEta = fs->make<TH2F>("h2_Pt_vsEta", "", 500., 1.5, 3., 1000, 0., 200.);
-  h2_rHGen_dR_vsEnergia = fs->make<TH2F>("h2_rHGen_dR_vsEnergia", "", 1000., 0., 1000., 1000., 0., 5.);
-  h2_rHGen_dR_vsPt = fs->make<TH2F>("h2_rHGen_dR_vsPt", "", 1000., 0., 200., 1000., 0., 5.);
-  h2_rHGen_dRcosh_vsEta = fs->make<TH2F>("h2_rHGen_dRcosh_vsEta", "", 500., 1.5, 3., 1000., 0., 5.);
-  h2_rHGen_dRcoshP_vsEta = fs->make<TH2F>("h2_rHGen_dRcoshP_vsEta", "", 500., 1.5, 3., 1000., 0., 5.);
-
-  tp2_Energy_vs_Eta_dR = fs->make<TProfile2D>("tp2_Energy_vs_Eta_dR", "", 500., 1.5, 3., 1000, 0., 1000);
-  tp2_Energy_vs_Eta_dDist = fs->make<TProfile2D>("tp2_Energy_vs_Eta_dDist", "", 500., 1.5, 3., 1000, 0., 1000);
 
   h2_dPhivsdEta_rhGen = fs->make<TH2F>("h2_dPhivsdEta_rhGen", "", 500, -0.2, 0.2, 500, -0.2, 0.2);
   h2_dPhivsdEta_rhGen_fixL = fs->make<TH2F>("h2_dPhivsdEta_rhGen_fixL", "", 500, -0.2, 0.2, 500, -0.2, 0.2);
   h2_dPhivsdEta_rhAxis = fs->make<TH2F>("h2_dPhivsdEta_rhAxis", "", 1000, -2., 2., 1000, -2., 2.);
   h2_dPhivsdEta_GenAxis = fs->make<TH2F>("h2_dPhivsdEta_GenAxis", "", 1000, -2., 2., 1000, -2., 2.);
 
-  for(int ieta=0; ieta<8; ++ieta){
-    
-    std::cout << " ieta from = " << (1.5+ieta*0.2) << " to " << 1.5+0.2+ieta*0.2 << std::endl;
-    h_rhGen_Radius_Eta[ieta] = fs->make<TH1F>(Form("h_rhGen_Radius_Eta_%.1f-%.1f", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2), "", 1000, 0., 10.); 
-    h_rhGen_RadiusDdeta_Eta[ieta] = fs->make<TH1F>(Form("h_rhGen_RadiusDdeta_Eta_%.1f-%.1f", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2), "", 1000, 0., 10.); 
-    h_rhGen_RadiusPdeta_Eta[ieta] = fs->make<TH1F>(Form("h_rhGen_RadiusPdeta_Eta_%.1f-%.1f", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2), "", 1000, 0., 10.); 
-
-    for(int iRad=0; iRad<3; ++iRad){
-      hAverageTime_Eta_dRadius[ieta][iRad] = fs->make<TH1F>(Form("hAverageTime_Eta%.1f-%.1f_dRadius%d", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 500, -0.2, 0.5);
-      hFractionHitsWithTime_Eta_dRadius[ieta][iRad] = fs->make<TH1F>(Form("hFractionHits_Eta%.1f-%.1f_dRadius%d", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 1000, 0, 1.);
-      hFractionEvents_HitsWithTime_Eta_dRadius[ieta][iRad] = fs->make<TH1F>(Form("hFractionEvents_Hits_Eta%.1f-%.1f_dRadius%d", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 1000, 0, 1.);
-      tpFractionHitsWithTime_Eta_dRadius_vsPt[ieta][iRad] = fs->make<TProfile>(Form("tpFractionHits_Eta%.1f-%.1f_dRadius%d_vsPt", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 1000, 0, 1000.);
-      hTotHits_Eta_dRadius[ieta][iRad] = fs->make<TH1F>(Form("hTotHits_Eta_%.1f-%.1f_dRadius%d", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 1000, 0, 100.);
-      hTotHitsWithTime_Eta_dRadius[ieta][iRad] = fs->make<TH1F>(Form("hTotHitsWithTime_Eta_%.1f-%.1f_dRadius%d", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 1000, 0, 100.);
-
-      if(iRad > 1) continue;
-      hAverageTime_Eta_dRadius_fixL[ieta][iRad] = fs->make<TH1F>(Form("hAverageTime_Eta%.1f-%.1f_dRadius%d_fixL", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 500, -0.2, 0.5);
-      hFractionHitsWithTime_Eta_dRadius_fixL[ieta][iRad] = fs->make<TH1F>(Form("hFractionHits_Eta%.1f-%.1f_dRadius%d_fixL", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 1000, 0, 1.);
-      hTotHits_Eta_dRadius_fixL[ieta][iRad] = fs->make<TH1F>(Form("hTotHits_Eta_%.1f-%.1f_dRadius%d_fixL", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 1000, 0, 100.);
-      hTotHitsWithTime_Eta_dRadius_fixL[ieta][iRad] = fs->make<TH1F>(Form("hTotHitsWithTime_Eta_%.1f-%.1f_dRadius%d_fixL", (1.5+ieta*0.2), 1.5+0.2+ieta*0.2, iRad), "", 1000, 0, 100.);
-
-    }
-  }
-
-
-  for(int yui=0; yui<8; ++yui){
-    for(int wer=0; wer<3; ++wer)
-      {
-	totEvtsEtaRadius[yui][wer] = 0;
-	totEvtsEtaRadius_withTime[yui][wer] = 0;
-      }
-  }
-
-
-  for(int ij=0; ij<8; ++ij){
-    radiusEtaRad[ij][0] = 2.;
-    radiusEtaRad[ij][1] = 5.;
-    radiusEtaRad[ij][2] = 10.;
-  }
-
   /*
-  radiusEtaRad[0][0] = 1.55;
-  radiusEtaRad[0][1] = 2.15;
-  radiusEtaRad[0][2] = 2.55;
-  radiusEtaRad[1][0] = 1.4;
-  radiusEtaRad[1][1] = 1.8;
-  radiusEtaRad[1][2] = 2.25;
-  radiusEtaRad[2][0] = 1.1;
-  radiusEtaRad[2][1] = 1.6;
-  radiusEtaRad[2][2] = 1.95;
-  radiusEtaRad[3][0] = 1.15;
-  radiusEtaRad[3][1] = 1.35;
-  radiusEtaRad[3][2] = 1.7;
-  radiusEtaRad[4][0] = 1.;
-  radiusEtaRad[4][1] = 1.35;
-  radiusEtaRad[4][2] = 1.7;
-  radiusEtaRad[5][0] = 0.85;
-  radiusEtaRad[5][1] = 1.1;
-  radiusEtaRad[5][2] = 1.4;
-  radiusEtaRad[6][0] = 0.65;
-  radiusEtaRad[6][1] = 0.85;
-  radiusEtaRad[6][2] = 1.05;
-  radiusEtaRad[7][0] = 0.55;
-  radiusEtaRad[7][1] = 0.7;
-  radiusEtaRad[7][2] = 0.85;
-  */
-/*
-  radiusEtaRad[0][0] = 1.7;
-  radiusEtaRad[0][1] = 2.3;
-  radiusEtaRad[0][2] = 3.;
-  radiusEtaRad[1][0] = 1.6;
-  radiusEtaRad[1][1] = 2.2;
-  radiusEtaRad[1][2] = 2.9;
-  radiusEtaRad[2][0] = 1.5;
-  radiusEtaRad[2][1] = 2.1;
-  radiusEtaRad[2][2] = 2.7;
-  radiusEtaRad[3][0] = 1.3;
-  radiusEtaRad[3][1] = 1.9;
-  radiusEtaRad[3][2] = 2.4;
-  radiusEtaRad[4][0] = 1.;
-  radiusEtaRad[4][1] = 1.6;
-  radiusEtaRad[4][2] = 2.1;
-  radiusEtaRad[5][0] = 0.9;
-  radiusEtaRad[5][1] = 1.4;
-  radiusEtaRad[5][2] = 1.8;
-  radiusEtaRad[6][0] = 0.85;
-  radiusEtaRad[6][1] = 1.2;
-  radiusEtaRad[6][2] = 1.6;
-  radiusEtaRad[7][0] = 0.8;
-  radiusEtaRad[7][1] = 1.1;
-  radiusEtaRad[7][2] = 1.5;
+    h_dEta_pos = fs->make<TH1F>("h_dEta_pos", "", 500, -0.1, 0.1);
+    h_dPhi_pos = fs->make<TH1F>("h_dPhi_pos", "", 500, -0.1, 0.1);
+    h_dEta_neg = fs->make<TH1F>("h_dEta_neg", "", 500, -0.1, 0.1);
+    h_dPhi_neg = fs->make<TH1F>("h_dPhi_neg", "", 500, -0.1, 0.1);
   */
 
 }
@@ -467,38 +367,8 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 {
   //  std::cout << " >>> analyzer " << std::endl;
   using namespace edm;
-  /*
-  agpc->clear();
-  arhc->clear();
-  arhc_raw->clear();
-  acdc->clear();
-  amcc->clear();
-  ascc->clear();
-  apfcc->clear();
-  acpc->clear();
-  */
-
-  // Energy_layer_calib.clear();
-  // Energy_layer_calib_fraction.clear();
-  // nHits_layer.clear();
-  // nHitsWithTime_layer.clear();
-  // for(unsigned int ij=0; ij<60; ++ij){
-  //   Energy_layer_calib.push_back(0.);
-  //   Energy_layer_calib_fraction.push_back(0.);
-  //   nHits_layer.push_back(0.);
-  //   nHitsWithTime_layer.push_back(0.);
-  // }
 
   recHitTools.getEventSetup(iSetup);
-  //  utilsMet = UsefulClasses();
-
-  //  int npart = 0;
-  /*
-  int nhit  = 0;
-  int nhit_raw = 0;
-  int nsimclus = 0;
-  int ncalopart = 0;
-  */
 
   Handle<HGCRecHitCollection> recHitHandleEE;
   Handle<HGCRecHitCollection> recHitHandleFH;
@@ -519,16 +389,16 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   iEvent.getByToken(_caloParticles, caloParticleHandle);
   const std::vector<CaloParticle>& caloParticles = *caloParticleHandle;
 
-  // Handle<reco::CaloClusterCollection> clusterHandle;
-  // iEvent.getByToken(_clusters,clusterHandle);
-  // const reco::CaloClusterCollection &clusters = *clusterHandle;
-
-  // edm::PtrVector<reco::CaloCluster> clusterPtrs;
-  // for( unsigned i = 0; i < clusterHandle->size(); ++i ){
-  //   edm::Ptr<reco::CaloCluster> ptr(clusterHandle,i);
-  //   clusterPtrs.push_back(ptr);
-  // }
-
+  Handle<reco::CaloClusterCollection> clusterHandle;
+  iEvent.getByToken(_clusters,clusterHandle);
+  const reco::CaloClusterCollection &clusters = *clusterHandle;
+  /*
+  edm::PtrVector<reco::CaloCluster> clusterPtrs;
+  for( unsigned i = 0; i < clusterHandle->size(); ++i ){
+    edm::Ptr<reco::CaloCluster> ptr(clusterHandle,i);
+    clusterPtrs.push_back(ptr);
+  }
+  */
   Handle<std::vector<reco::HGCalMultiCluster> > multiClusterHandle;
   iEvent.getByToken(_multiClusters, multiClusterHandle);
   const std::vector<reco::HGCalMultiCluster>& multiClusters = *multiClusterHandle;
@@ -623,6 +493,40 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
   ////////////////////
 
   //  std::cout << " >>> now caloparticles " << std::endl;
+  /*
+  float seedEnergy = 0;
+  float scondEnergy = 0;
+  unsigned int seedIndex = 0;
+  unsigned int secondIndex = 0;
+  for(unsigned int i = 0; i < clusters.size(); i++){
+    if(clusters.at(i).eta() < 0) continue;
+    h3_2dCl_xz->Fill(clusters.at(i).z(), clusters.at(i).x(),  clusters.at(i).energy());
+    h3_2dCl_yz->Fill(clusters.at(i).z(), clusters.at(i).y(), clusters.at(i).energy());
+    //    h3_2dCl_xyz->Fill(clusters.at(i).z(), clusters.at(i).y(), clusters.at(i).x(), clusters.at(i).energy());
+    if(clusters.at(i).energy() > seedEnergy){
+      seedEnergy = clusters.at(i).energy();
+      seedIndex = i;
+    }
+  }
+    
+  for(unsigned int i = 0; i < clusters.size(); i++){
+    if(clusters.at(i).eta() < 0) continue;
+    if(clusters.at(i).energy() > scondEnergy && i != seedIndex){
+      scondEnergy = clusters.at(i).energy();
+      secondIndex = i;
+    }
+  }
+
+  h3_bary_xz->Fill(clusters.at(secondIndex).z(), clusters.at(secondIndex).x());
+  h3_bary_yz->Fill(clusters.at(secondIndex).z(), clusters.at(secondIndex).y());
+  h3_bary_xz->Fill(clusters.at(seedIndex).z(), clusters.at(seedIndex).x());
+  h3_bary_yz->Fill(clusters.at(seedIndex).z(), clusters.at(seedIndex).y());
+  h3_seed_xz->Fill(clusters.at(seedIndex).z(), clusters.at(seedIndex).x());
+  h3_seed_yz->Fill(clusters.at(seedIndex).z(), clusters.at(seedIndex).y());
+  h3_seed_xz->Fill(0., 0.);
+  h3_seed_yz->Fill(0., 0.);
+  */
+  ////////////////
 
   // loop over caloParticles
   for (std::vector<CaloParticle>::const_iterator it_caloPart = caloParticles.begin(); it_caloPart != caloParticles.end(); ++it_caloPart){
@@ -632,8 +536,10 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     UsefulClasses utilsMet = UsefulClasses(etaGen, phiGen); 
       
-
     int nmclusCount = 0;
+    int nSelmclusCount = 0;
+    int num2DClinBestMC = 0;
+    int num2DClinSelMC = 0;
     unsigned int MC_best_index = 0;
     float MC_best_energy = 0;
     //    std::cout << " >>> now MCL " << std::endl;
@@ -644,18 +550,32 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	MC_best_index = i;
 	MC_best_energy = multiClusters[i].energy();
       }
-    }
+    } // found MC seed = best
 
     float sum2DClusterEnergy = 0;
     float sum2DClusterEnergy_vsDR_wrtGen[5];
     float sum2DClusterEnergy_vsDR_wrtMCl[5];
     float sum2DClusterEnergy_vsRadius_wrtGen[5];
     float sum2DClusterEnergy_vsRadius_wrtMCl[5];
+    float sum2DClSelEnergy = 0;
+    float sum2DClSelEnergy_vsDR_wrtGen[5];
+    float sum2DClSelEnergy_vsDR_wrtMCl[5];
+    float sum2DClSelEnergy_vsRadius_wrtGen[5];
+    float sum2DClSelEnergy_vsRadius_wrtMCl[5];
+    float sum2DClSelConsEnergy = 0;
+    float sum2DClSelConsEnergy_vsRadius_wrtGen[5];
+    float sum2DClSelConsEnergy_vsRadius_wrtMCl[5];
     for(int ij=0; ij<5; ++ij){
       sum2DClusterEnergy_vsDR_wrtGen[ij] = 0;
       sum2DClusterEnergy_vsRadius_wrtGen[ij] = 0;
       sum2DClusterEnergy_vsDR_wrtMCl[ij] = 0;
       sum2DClusterEnergy_vsRadius_wrtMCl[ij] = 0;
+      sum2DClSelEnergy_vsDR_wrtGen[ij] = 0;
+      sum2DClSelEnergy_vsRadius_wrtGen[ij] = 0;
+      sum2DClSelEnergy_vsDR_wrtMCl[ij] = 0;
+      sum2DClSelEnergy_vsRadius_wrtMCl[ij] = 0;
+      sum2DClSelConsEnergy_vsRadius_wrtGen[ij] = 0;
+      sum2DClSelConsEnergy_vsRadius_wrtMCl[ij] = 0;
     }
     //      std::cout << " >>> MC energy = " << multiClusters[i].energy() << " i  = " << i << std::endl;
     for(unsigned int i = 0; i < multiClusters.size(); i++){
@@ -664,39 +584,139 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       float etaMC = multiClusters[i].eta();
       float phiMC = multiClusters[i].phi();
 
-
       h_EfracMCl_wrt_Best->Fill(multiClusters[i].energy() / multiClusters[MC_best_index].energy());
-
       h_energyFractionInMC->Fill(multiClusters[i].energy()/it_caloPart->energy()); 
-
       if(multiClusters[i].energy() >= 0.10 * multiClusters[MC_best_index].energy()) ++nmclusCount;
 
+
+      if(multiClusters[i].size() >= 3 || MC_best_index == i) {
+	nSelmclusCount += 1;
+	h_EfracSelectedMCl_wrt_Best->Fill(multiClusters[i].energy() / multiClusters[MC_best_index].energy());
+	h_energyFractionInSelectedMC->Fill(multiClusters[i].energy()/it_caloPart->energy()); 
+
+	num2DClinSelMC += multiClusters[i].size(); 
+
+	h2_dPhiSelMCtoGen_vsPt->Fill(it_caloPart->pt(), reco::deltaPhi(multiClusters[i].phi(), it_caloPart->phi()));
+        h_dPhiSelMCtoGen->Fill(reco::deltaPhi(multiClusters[i].phi(), it_caloPart->phi()));
+
+	bool areConsecutive = false;
+	int layerCL[52];
+
+	//look for MC 2DCseed
+	for(int il=0; il<52; ++il) layerCL[il] = 0;
+	int cl2dSeed = 0;
+        unsigned int layerSeedRH = 0;
+        for(reco::HGCalMultiCluster::component_iterator it = multiClusters[i].begin();
+            it!=multiClusters[i].end(); it++){
+	  if((*it)->energy() > (*(multiClusters[i].begin()+cl2dSeed))->energy()){
+            cl2dSeed = it - multiClusters[i].begin();
+	  }
+  
+	  sum2DClSelEnergy += (*it)->energy();
+
+          float eta2DCl = (*it)->eta();
+          float phi2DCl = (*it)->phi();
+
+          float dR_2DClSelGen = reco::deltaR(etaGen, eta2DCl, phiGen, phi2DCl);
+          float dR_2DClSelMCl = reco::deltaR(multiClusters[MC_best_index].eta(), eta2DCl, multiClusters[MC_best_index].phi(), phi2DCl);
+
+          if(int(dR_2DClSelMCl) < 5) sum2DClSelEnergy_vsDR_wrtMCl[int(dR_2DClSelMCl)] += (*it)->energy();
+          if(int(dR_2DClSelGen) < 5) sum2DClSelEnergy_vsDR_wrtGen[int(dR_2DClSelGen)] += (*it)->energy();
+
+
+          float x2DCl = (*it)->x();
+          float y2DCl = (*it)->y();
+          float z2DCl = (*it)->z();
+
+	  layerCL[utilsMet.Ztolayer(z2DCl, eta2DCl)] += 1;
+
+          float Radius_2DClSelGen = utilsMet.dsGenRecoObj(etaGen, phiGen, z2DCl, x2DCl, y2DCl);
+          float Radius_2DClSelMCl = utilsMet.dsGenRecoObj(multiClusters[MC_best_index].eta(), multiClusters[MC_best_index].phi(), z2DCl, x2DCl, y2DCl);
+
+          if(int(Radius_2DClSelGen) < 5) sum2DClSelEnergy_vsRadius_wrtGen[int(Radius_2DClSelGen)] += (*it)->energy();
+          if(int(Radius_2DClSelMCl) < 5) sum2DClSelEnergy_vsRadius_wrtMCl[int(Radius_2DClSelMCl)] += (*it)->energy();
+
+
+          h2_dPhi2DClSeltoGen_vsPt->Fill(it_caloPart->pt(), reco::deltaPhi(phiGen, phi2DCl));
+          h_dPhi2DClSeltoGen->Fill(reco::deltaPhi(phiGen, phi2DCl));
+
+          h_dR_2DClSel_multiCl->Fill(Radius_2DClSelMCl);
+          h_dR_2DClSel_Gen->Fill(Radius_2DClSelGen);
+
+	}// end loop1 to find seed
+
+	float eta2dS = (*(multiClusters[i].begin() + cl2dSeed))->eta();
+        float phi2dS = (*(multiClusters[i].begin() + cl2dSeed))->phi();
+
+        h2_dR_SeedCl2_SelmultiCl_vsEta->Fill(std::abs(multiClusters[MC_best_index].eta()), 
+					     reco::deltaR(multiClusters[MC_best_index].eta(), multiClusters[MC_best_index].phi(), eta2dS, phi2dS));
+        tp_dR_SeedCl2_SelmultiCl_vsEta->Fill(std::abs(multiClusters[MC_best_index].eta()), 
+					     reco::deltaR(multiClusters[MC_best_index].eta(), multiClusters[MC_best_index].phi(), eta2dS, phi2dS));
+	//        h2_dR_SeedCl2_SelmultiCl_vsLayerS2d->Fill(layerSeedRH, reco::deltaR(multiClusters[MC_best_index].eta(), multiClusters[MC_best_index].phi(), eta2dS, phi2dS));
+        h_dR_SeedCl2_SelmultiCl->Fill(reco::deltaR(multiClusters[MC_best_index].eta(), multiClusters[MC_best_index].phi(), eta2dS, phi2dS));
+
+
+
+	//	h_2DClSelSumE_overMCE->Fill(sum2DClSelEnergy/multiClusters[i].energy());
+        h_2DClSelSumE->Fill(sum2DClSelEnergy/it_caloPart->energy());
+
+        for(int kk=0; kk<5; ++kk){
+          tp_2DClSelSumE_vsDR_wrtGen->Fill(kk, sum2DClSelEnergy_vsDR_wrtGen[kk] / it_caloPart->energy());
+          tp_2DClSelSumE_vsDR_wrtMCl->Fill(kk, sum2DClSelEnergy_vsDR_wrtMCl[kk] / it_caloPart->energy());
+          tp_2DClSelSumE_vsRadius_wrtGen->Fill(kk, sum2DClSelEnergy_vsRadius_wrtGen[kk] / it_caloPart->energy());
+          tp_2DClSelSumE_vsRadius_wrtMCl->Fill(kk, sum2DClSelEnergy_vsRadius_wrtMCl[kk] / it_caloPart->energy());
+        }
+
+
+	for(int il=0; il<52-2; ++il){
+	  std::cout << " layer = " << il << " counts = " << layerCL[il] << std::endl;
+	  if(layerCL[il] > 0 && layerCL[il+1] > 0 && layerCL[il+2] > 0){
+	    areConsecutive = true;
+	    break;
+	  }
+	}
+	std::cout << " areConsecutive =  " << areConsecutive  << std::endl;
+	if(areConsecutive){
+	  for(reco::HGCalMultiCluster::component_iterator it = multiClusters[i].begin();
+	      it!=multiClusters[i].end(); it++){
+	    sum2DClSelConsEnergy += (*it)->energy();
+	    float Radius_2DClSelConsGen = utilsMet.dsGenRecoObj(etaGen, phiGen, (*it)->z(), (*it)->x(), (*it)->y());
+	    float Radius_2DClSelConsMCl = utilsMet.dsGenRecoObj(multiClusters[MC_best_index].eta(), multiClusters[MC_best_index].phi(), (*it)->z(), (*it)->x(), (*it)->y());
+
+	    if(int(Radius_2DClSelConsGen) < 5) sum2DClSelConsEnergy_vsRadius_wrtGen[int(Radius_2DClSelConsGen)] += (*it)->energy();
+	    if(int(Radius_2DClSelConsMCl) < 5) sum2DClSelConsEnergy_vsRadius_wrtMCl[int(Radius_2DClSelConsMCl)] += (*it)->energy();
+	  }
+	}
+	
+      }
+
       if(MC_best_index == i){
+	h_energyFractionInBestMC->Fill(multiClusters[i].energy()/it_caloPart->energy()); 
 	h_n2dClPerMC->Fill(multiClusters[i].size());
+	num2DClinBestMC = multiClusters[i].size();
 	float MC_pT = multiClusters[i].energy()/cosh(multiClusters[i].eta());
-	h2_dPhiMCtoGen_vsPt->Fill(MC_pT, reco::deltaPhi(multiClusters[i].phi(), it_caloPart->phi()));
+	//	h2_dPhiMCtoGen_vsPt->Fill(MC_pT, reco::deltaPhi(multiClusters[i].phi(), it_caloPart->phi()));
+	h2_dPhiMCtoGen_vsPt->Fill(it_caloPart->pt(), reco::deltaPhi(multiClusters[i].phi(), it_caloPart->phi()));
 	h_dPhiMCtoGen->Fill(reco::deltaPhi(multiClusters[i].phi(), it_caloPart->phi()));
 	
 	int cl2dSeed = 0;
-	//	int cl2dSeedRa = 0;
 	unsigned int layerSeedRH = 0;
 	//	std::cout << " >>> nuovo ciclo " << std::endl;
 	//	std::cout << " >>> now 2D cluster " << std::endl;
+	std::vector<float> Cluster2DZ;
+	std::vector<int> Cluster2DIt;
+	Cluster2DZ.clear();
+	Cluster2DIt.clear();
 	for(reco::HGCalMultiCluster::component_iterator it = multiClusters[i].begin();
 	    it!=multiClusters[i].end(); it++){
 
-	  // std::cout << " >>> now get the seed 2dcluster (*it)->energy() = " << (*it)->energy() << "  of seed = " << (*(multiClusters[i].begin()+cl2dSeedRa))->energy() << std::endl;
-	  // std::cout << " >>> cl2dSeed = " << cl2dSeed << std::endl;
-
-	  // if((*it)->energy() > (*(it+cl2dSeed))->energy()){
-	  //   cl2dSeed = it - multiClusters[i].begin();
-	  //   std::cout << " clem = " << (*it)->energy() << std::endl;
-	  // }
 	  if((*it)->energy() > (*(multiClusters[i].begin()+cl2dSeed))->energy()){
 	    cl2dSeed = it - multiClusters[i].begin();
 	    //	    std::cout << " Ra = " << (*it)->energy() << std::endl;
 	  }
-	  
+
+	  //not used loop over rechits	
+	  /*  
 	  int rhSeed = 0;
 	  //	  std::cout << " >>> 1st rechit loop " << std::endl;
 	  const std::vector< std::pair<DetId, float> > &hf = (*it)->hitsAndFractions();
@@ -709,62 +729,26 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	      layerSeedRH = recHitTools.getLayerWithOffset(hf[j].first);
 	    }
 	    //	    std::cout << " >>>  now time  " << std::endl;
-	    if(hit->time() > 0){
-	      float rhX = recHitTools.getPosition(hf[j].first).x();
-	      float rhY = recHitTools.getPosition(hf[j].first).y();
-	      float rhL = recHitTools.getLayerWithOffset(hf[j].first);
-
-	      float dRwrtGen = utilsMet.dsGenRecHit(etaGen, phiGen, rhL, rhX, rhY);
-	      float dRwrtMCl = utilsMet.dsGenRecHit(etaMC, phiMC, rhL, rhX, rhY);
-
-	      h2_cellRadius_vsThick->Fill(recHitTools.getSiThickness(hf[j].first), recHitTools.getRadiusToSide(hf[j].first));
-
-	      //	      int timesOfRadius = int(dRwrtGen / recHitTools.getRadiusToSide(hf[j].first) );
-	      int timesOfRadius = int(dRwrtGen);
-
-	      if(timesOfRadius < 3) h_hitTimeinRing_wrtGen[timesOfRadius]->Fill(hit->time()-1);
-	      else h_hitTimeinRing_wrtGen[3]->Fill(hit->time()-1);
-	      if(timesOfRadius < 2) h2_hitTimeinRing_wrtGen_vsL->Fill(recHitTools.getLayerWithOffset(hf[j].first), hit->time()-1);
-
-	      //	      timesOfRadius = int(dRwrtMCl / recHitTools.getRadiusToSide(hf[j].first));
-	      timesOfRadius = int(dRwrtMCl);
-	      if(timesOfRadius < 3) h_hitTimeinRing_wrtMCl[timesOfRadius]->Fill(hit->time()-1);
-	      else h_hitTimeinRing_wrtMCl[3]->Fill(hit->time()-1);
-	    }
 	  }
 	  //	  std::cout << " >>> 2nd rechit loop seedL = " << layerSeedRH << std::endl;
-	  // 2nd loop to stick on the seed layer
-	
+
+	  // 2nd loop to stick on the seed layer	
 	  for(unsigned int j = 0; j < hf.size(); j++){
             const HGCRecHit *hit = hitmap[hf[j].first];
 	    if(recHitTools.getLayerWithOffset(hf[j].first) == layerSeedRH){
-	      if(hit->time() > 0){
-		float rhX = recHitTools.getPosition(hf[j].first).x();
-		float rhY = recHitTools.getPosition(hf[j].first).y();
-		float rhL = recHitTools.getLayerWithOffset(hf[j].first);
-		
-		float dRwrtGen = utilsMet.dsGenRecHit(etaGen, phiGen, rhL, rhX, rhY);
-		float dRwrtMCl = utilsMet.dsGenRecHit(etaMC, phiMC, rhL, rhX, rhY);
-
-		//		int timesOfRadius = int(dRwrtGen / recHitTools.getRadiusToSide(hf[j].first));
-		int timesOfRadius = int(dRwrtGen);
-		if(timesOfRadius < 5) h_hitTimeinRing_wrtGen_fixL[timesOfRadius]->Fill(hit->time()-1);
-		else h_hitTimeinRing_wrtGen_fixL[5]->Fill(hit->time()-1);
-		if(timesOfRadius < 3) h2_hitTimeinRing_wrtGen_vsL_fixL->Fill(recHitTools.getLayerWithOffset(hf[j].first), hit->time()-1);
-
-		//		timesOfRadius = int(dRwrtMCl / recHitTools.getRadiusToSide(hf[j].first));
-		timesOfRadius = int(dRwrtMCl);
-		if(timesOfRadius < 5) h_hitTimeinRing_wrtMCl_fixL[timesOfRadius]->Fill(hit->time()-1);
-		else h_hitTimeinRing_wrtMCl_fixL[5]->Fill(hit->time()-1);
-	      }
+	    
 	    }	  
 	  }
+	  */
 	
 
 	  sum2DClusterEnergy += (*it)->energy();
 
 	  float eta2DCl = (*it)->eta();
 	  float phi2DCl = (*it)->phi();
+
+	  Cluster2DZ.push_back(utilsMet.Ztolayer((*it)->z(), eta2DCl) );
+	  Cluster2DIt.push_back(it - multiClusters[i].begin());
 
 	  float dR_2DClGen = reco::deltaR(etaGen, eta2DCl, phiGen, phi2DCl);
 	  float dR_2DClMCl = reco::deltaR(etaMC, eta2DCl, phiMC, phi2DCl);
@@ -782,6 +766,15 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	  
 	  if(int(Radius_2DClGen) < 5) sum2DClusterEnergy_vsRadius_wrtGen[int(Radius_2DClGen)] += (*it)->energy();
 	  if(int(Radius_2DClMCl) < 5) sum2DClusterEnergy_vsRadius_wrtMCl[int(Radius_2DClMCl)] += (*it)->energy();
+
+
+	  h2_dPhi2DCltoGen_vsPt->Fill(it_caloPart->pt(), reco::deltaPhi(phiGen, phi2DCl));
+	  h_dPhi2DCltoGen->Fill(reco::deltaPhi(phiGen, phi2DCl));
+
+	  h_dR_2DCl_multiCl->Fill(Radius_2DClMCl);
+	  h_dR_2DCl_Gen->Fill(Radius_2DClGen);
+
+
 	} // loop over 2D cluster
 
 	// FIXME LAYER dai recHit
@@ -789,83 +782,53 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	// std::cout << " mclPosition.eta = " << mclPosition.eta() << " mclPosition.phi = " << mclPosition.phi() 
 	// 	      << " mcl.eta() = " << multiClusters[i].eta() << " phi = " << multiClusters[i].phi() << std::endl;
 
+
 	float eta2dS = (*(multiClusters[i].begin() + cl2dSeed))->eta();
 	float phi2dS = (*(multiClusters[i].begin() + cl2dSeed))->phi();
 
+
+	for(unsigned int is=0; is<Cluster2DZ.size(); ++is){
+	  if(Cluster2DIt.at(is) == cl2dSeed){ 
+	    //	    std::cout << " delta layer seed = " << Cluster2DZ.at(is) - utilsMet.Ztolayer((*(multiClusters[i].begin() + cl2dSeed))->z(), eta2dS) << std::endl; 
+	    continue;
+	  }
+	  //	  std::cout << " delta layer altro = " << Cluster2DZ.at(is) - utilsMet.Ztolayer((*(multiClusters[i].begin() + cl2dSeed))->z(), eta2dS) << std::endl; 
+	  h_deltaLayer_2dClPerMC->Fill(Cluster2DZ.at(is) - utilsMet.Ztolayer((*(multiClusters[i].begin() + cl2dSeed))->z(), eta2dS));
+	  h2_deltaLayer_n2dClPerMC_vs_2dClPerMC->Fill(Cluster2DZ.at(is) - utilsMet.Ztolayer((*(multiClusters[i].begin() + cl2dSeed))->z(), eta2dS), num2DClinBestMC);
+	  h2_deltaLayer_n2dClPerMC_vs_2dClEnergy->Fill(Cluster2DZ.at(is) - utilsMet.Ztolayer((*(multiClusters[i].begin() + cl2dSeed))->z(), eta2dS), 
+						       (*(multiClusters[i].begin() + Cluster2DIt.at(is)))->energy() / (*(multiClusters[i].begin() + cl2dSeed))->energy() );
+	}
+
+
 	h2_dR_SeedCl2_multiCl_vsEta->Fill(std::abs(etaMC), reco::deltaR(etaMC, phiMC, eta2dS, phi2dS));
 	tp_dR_SeedCl2_multiCl_vsEta->Fill(std::abs(etaMC), reco::deltaR(etaMC, phiMC, eta2dS, phi2dS));
-	h2_dR_SeedCl2_multiCl_vsLayerS2d->Fill(layerSeedRH, reco::deltaR(etaMC, phiMC, eta2dS, phi2dS));
+	//	h2_dR_SeedCl2_multiCl_vsLayerS2d->Fill(layerSeedRH, reco::deltaR(etaMC, phiMC, eta2dS, phi2dS));
 	h_dR_SeedCl2_multiCl->Fill(reco::deltaR(etaMC, phiMC, eta2dS, phi2dS));
 
+
+
+
+	h_2DClSumE_overMCE->Fill(sum2DClusterEnergy/multiClusters[i].energy());
+	h_2DClSumE->Fill(sum2DClusterEnergy/it_caloPart->energy());
+	
+	h2_2DClSumE_vsVtxZ->Fill(vz, sum2DClusterEnergy/it_caloPart->energy());
+	tp_2DClSumE_vsVtxZ->Fill(vz, sum2DClusterEnergy/it_caloPart->energy()); 
+
+	for(int kk=0; kk<5; ++kk){
+	  tp_2DClSumE_vsDR_wrtGen->Fill(kk, sum2DClusterEnergy_vsDR_wrtGen[kk] / it_caloPart->energy());
+	  tp_2DClSumE_vsDR_wrtMCl->Fill(kk, sum2DClusterEnergy_vsDR_wrtMCl[kk] / it_caloPart->energy());
+	  tp_2DClSumE_vsRadius_wrtGen->Fill(kk, sum2DClusterEnergy_vsRadius_wrtGen[kk] / it_caloPart->energy());
+	  tp_2DClSumE_vsRadius_wrtMCl->Fill(kk, sum2DClusterEnergy_vsRadius_wrtMCl[kk] / it_caloPart->energy());
+	}
 	//	std::cout << " reco::deltaR = " << reco::deltaR(etaMC, phiMC, eta2dS, phi2dS) << " ok = " << sqrt(pow(etaMC-eta2dS, 2 ) + pow(reco::deltaPhi(phiMC,phi2dS), 2) )<< std::endl;
       } // MC best
     } // loop MC
 
-    h_2DClSumE->Fill(sum2DClusterEnergy/it_caloPart->energy());
-    for(int kk=0; kk<5; ++kk){
-      tp_2DClSumE_vsDR_wrtGen->Fill(kk, sum2DClusterEnergy_vsDR_wrtGen[kk] / it_caloPart->energy());
-      tp_2DClSumE_vsDR_wrtMCl->Fill(kk, sum2DClusterEnergy_vsDR_wrtMCl[kk] / it_caloPart->energy());
-      tp_2DClSumE_vsRadius_wrtGen->Fill(kk, sum2DClusterEnergy_vsRadius_wrtGen[kk] / it_caloPart->energy());
-      tp_2DClSumE_vsRadius_wrtMCl->Fill(kk, sum2DClusterEnergy_vsRadius_wrtMCl[kk] / it_caloPart->energy());
-    }
-
+    h_nMCvsnum2dClBestMC->Fill(num2DClinBestMC, nmclusCount);  
     h_nMCPerEvt->Fill(nmclusCount);
 
-    //start fixme => need to include in pt-gun matched
-
-    /*
-    float allRHSeedEnergy = 0;
-    //    int allRHSeedIndex = 0;
-    unsigned int allRHSeedLayer = 0;
-    for(std::map<DetId,const HGCRecHit*>::const_iterator jk = hitmap.begin(); jk != hitmap.end(); ++jk){
-
-      const HGCRecHit *hit = jk->second;
-      const HGCalDetId detid = jk->first;
-      
-      if(hit->energy() > allRHSeedEnergy){
-	allRHSeedEnergy = hit->energy();
-	allRHSeedLayer = recHitTools.getLayerWithOffset(detid);
-      }
-      // if(hit->time()-1 > 0){
-      // 	float hitEta = recHitTools.getEta(detid);
-      // 	float hitPhi = recHitTools.getPhi(detid);
-      // 	float dRwrtGen = reco::deltaR(hitEta, hitPhi, it_caloPart->eta(), it_caloPart->phi());
-
-      // 	int timesOfRadius = int(dRwrtGen / recHitTools.getRadiusToSide(detid) );
-      // 	if(timesOfRadius < 10) h_allhitTimeinRing_wrtGen[timesOfRadius]->Fill(hit->time()-1);
-      // 	else h_allhitTimeinRing_wrtGen[10]->Fill(hit->time()-1);
-
-      // 	h_allRH_TimesOfRadius->Fill(dRwrtGen / recHitTools.getRadiusToSide(detid));
-
-      // 	h2_allRH_TimesVsDRaxis->Fill(dRwrtGen, hit->time()-1);
-      // 	tp_allRH_TimesVsDRaxis->Fill(dRwrtGen, hit->time()-1);
-
-      // }
-
-    }
-    for(std::map<DetId,const HGCRecHit*>::const_iterator jk = hitmap.begin(); jk != hitmap.end(); ++jk){
-
-	const HGCRecHit *hit = jk->second;
-	const HGCalDetId detid = jk->first;
-
-	recHitTools.getLayerWithOffset(detid);
-	if(recHitTools.getLayerWithOffset(detid) == allRHSeedLayer){
-
-	if(hit->time()-1 > 0){
-	  float hitEta = recHitTools.getEta(detid);
-	  float hitPhi = recHitTools.getPhi(detid);
-	  float dRwrtGen = reco::deltaR(hitEta, hitPhi, it_caloPart->eta(), it_caloPart->phi());
-
-	  int timesOfRadius = int(dRwrtGen / recHitTools.getRadiusToSide(detid) );
-	  if(timesOfRadius < 10) h_allhitTimeinRing_wrtGen_fixL[timesOfRadius]->Fill(hit->time()-1);
-	  else h_allhitTimeinRing_wrtGen_fixL[10]->Fill(hit->time()-1);
-	}
-      }
-    }
-    */
-    //end fixme 
-  
-
+    h_nSelMCvsnum2dClSelMC->Fill(num2DClinSelMC, nSelmclusCount);  
+    h_nSelMCPerEvt->Fill(nSelmclusCount);
 
     //shower axis by recHits
     float axisX = 0;
@@ -876,29 +839,23 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 
     float sumMtcRHEnergy = 0;
     float sumMtcRHEnergy_vsDR_wrtGen[5];
-    //    float sumMtcRHEnergy_vsDR_wrtMCl[5];
     float sumMtcRHEnergy_vsRadius_wrtGen[5];
-    //    float sumMtcRHEnergy_vsRadius_wrtMCl[5];
     for(int ij=0; ij<5; ++ij){
       sumMtcRHEnergy_vsDR_wrtGen[ij] = 0;
       sumMtcRHEnergy_vsRadius_wrtGen[ij] = 0;
-      //      sumMtcRHEnergy_vsDR_wrtMCl[ij] = 0;
-      //      sumMtcRHEnergy_vsRadius_wrtMCl[ij] = 0;
     }
     //loop on rechit - matched to gen
     const SimClusterRefVector simClusterRefVector = it_caloPart->simClusters();
     for (CaloParticle::sc_iterator it_sc = simClusterRefVector.begin(); it_sc != simClusterRefVector.end(); ++it_sc) {
       const SimCluster simCluster = (*(*it_sc));
       const std::vector<std::pair<uint32_t,float> > hits_and_fractions = simCluster.hits_and_fractions();
-
       
+      //first loop get shower axis from rechits
       for (std::vector<std::pair<uint32_t,float> >::const_iterator it_haf = hits_and_fractions.begin(); it_haf != hits_and_fractions.end(); ++it_haf) {
 	//	unsigned int hitlayer = recHitTools.getLayerWithOffset(it_haf->first);
 	DetId hitid = (it_haf->first);
 
-	//	bool found = false;
 	float rhEnergy = 0;
-	//	float rhTime = -1;
 
 	std::map<DetId, const HGCRecHit*>::iterator trovatore = hitmap.find(hitid);
 	if(trovatore == hitmap.end()){
@@ -927,33 +884,15 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
       // std::cout << " axEta = " << axEta << std::endl;
       // std::cout << " axPhi = " << axPhi << std::endl;
 
-      unsigned int allRHSeedLayer = 0; 
+      //      unsigned int allRHSeedLayer = 0; 
       float allRHSeedEnergy = 0;   
-
-      float timePerEtaRadius[8][3];
-      int totRHPerEtaRadius[8][3];
-      int totRHPerEtaRadius_allTime[8][3];
-      float timePerEtaRadius_fixL[8][2];
-      int totRHPerEtaRadius_fixL[8][2];
-      int totRHPerEtaRadius_allTime_fixL[8][2];
-      for(int iet=0; iet<8; ++iet){
-	for(int irad=0; irad<3; ++irad){
-	  timePerEtaRadius[iet][irad] = 0.;
-	  totRHPerEtaRadius[iet][irad] = 0;
-	  totRHPerEtaRadius_allTime[iet][irad] = 0;
-	  if(irad > 1) continue;
-	  timePerEtaRadius_fixL[iet][irad] = 0.;
-	  totRHPerEtaRadius_fixL[iet][irad] = 0;
-	  totRHPerEtaRadius_allTime_fixL[iet][irad] = 0;
-	}
-      }
       //loop over hits
       for (std::vector<std::pair<uint32_t,float> >::const_iterator it_haf = hits_and_fractions.begin(); it_haf != hits_and_fractions.end(); ++it_haf) {
 	DetId hitid = (it_haf->first);
 
 	bool found = false;
 	float rhEnergy = 0;
-	float rhTime = -1;
+	//	float rhTime = -1;
 
 	std::map<DetId, const HGCRecHit*>::iterator trovatore = hitmap.find(hitid);
 	if(trovatore == hitmap.end()){
@@ -962,11 +901,9 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	else{
 	  const HGCRecHit *hit = hitmap[hitid];
 	  rhEnergy = hit->energy();
-	  rhTime = hit->time() - 1;
+	  //	  rhTime = hit->time() - 1;
 	  found = true;
-	  // if(recHitTools.getEta(hitid)*it_caloPart->eta() < 0){
-	  //   std::cout << " >>> MAJOR PROBLEM!!! " << std::endl;
-
+	  /*
 	    if(it_caloPart->eta() > 0){
 	      h_dEta_pos->Fill(recHitTools.getEta(hitid) - it_caloPart->eta());
 	      h_dPhi_pos->Fill(reco::deltaPhi(recHitTools.getPhi(hitid), it_caloPart->phi()) );
@@ -975,15 +912,13 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	      h_dEta_neg->Fill(recHitTools.getEta(hitid) - it_caloPart->eta());
 	      h_dPhi_neg->Fill(reco::deltaPhi(recHitTools.getPhi(hitid), it_caloPart->phi()) );
 	    }
+	  */
 
-	  //   return;
-	  // }
-
+	  //here look for seed
 	  if(hit->energy()*it_haf->second > allRHSeedEnergy){
 	    allRHSeedEnergy = hit->energy()*it_haf->second;
-	    allRHSeedLayer = recHitTools.getLayerWithOffset(hitid);
+	    //	    allRHSeedLayer = recHitTools.getLayerWithOffset(hitid);
 	  }
-
 	}
 	if(found){
 	  sumMtcRHEnergy += rhEnergy*it_haf->second;
@@ -1007,180 +942,23 @@ HGCalAxisAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
 	  float Radius_2DClGen = utilsMet.dsGenRecHit(etaGen, phiGen, rhL, rhX, rhY);
 	  if(int(Radius_2DClGen) < 5) sumMtcRHEnergy_vsRadius_wrtGen[int(Radius_2DClGen)] += rhEnergy*it_haf->second;	  
 
-	  h_rHGen_dR->Fill(Radius_2DClGen);
-	  h_rHGen_dDist->Fill(dR_2DClGen);
-	  h2_rHGen_dR_vsEta->Fill(std::abs(etaGen), Radius_2DClGen);
-	  h2_rHGen_dDist_vsEta->Fill(std::abs(etaGen), dR_2DClGen);
-	  tp_rHGen_dDist_vsEta->Fill(std::abs(etaGen), dR_2DClGen);
-	  h2_Energia_vsEta->Fill(std::abs(etaGen), it_caloPart->energy());
-	  h2_Pt_vsEta->Fill(std::abs(etaGen), it_caloPart->pt());
-	  h2_rHGen_dR_vsEnergia->Fill(it_caloPart->energy(), Radius_2DClGen);
-	  h2_rHGen_dR_vsPt->Fill(it_caloPart->pt(), Radius_2DClGen);
 
-	  tp2_Energy_vs_Eta_dR->Fill(std::abs(etaGen), it_caloPart->energy(), Radius_2DClGen);
-	  tp2_Energy_vs_Eta_dDist->Fill(std::abs(etaGen), it_caloPart->energy(), dR_2DClGen);
-
-	  h2_rHGen_dRcosh_vsEta->Fill(std::abs(etaGen), Radius_2DClGen/cosh(etaGen));
-	  h2_rHGen_dRcoshP_vsEta->Fill(std::abs(etaGen), Radius_2DClGen*cosh(etaGen));
-
-	  //FIXME
-	  int etaBin = int((std::abs(etaGen) - 1.5) / 0.2);
-	  int iRadBin = -1;
-	  for(int ir=0; ir<3; ++ir){
-	    if(Radius_2DClGen < radiusEtaRad[etaBin][ir]) {
-	      iRadBin = ir;
-	      break;
-	    }
-	  }
-
-	  if(iRadBin != -1) {
-	    for(int ir=iRadBin; ir<=2; ++ir) totRHPerEtaRadius_allTime[etaBin][ir] += 1;
-	  }
-
-	  if(rhTime > -1.){
-	    int timesOfRadius = int(Radius_2DClGen );
-
-	    if(timesOfRadius < 5) h_allhitTimeinRing_wrtGen[timesOfRadius]->Fill(rhTime);
-	    else h_allhitTimeinRing_wrtGen[5]->Fill(rhTime);
-
-	    h_rhGen_Radius_Eta[etaBin]->Fill(Radius_2DClGen);
-	    h_rhGen_RadiusDdeta_Eta[etaBin]->Fill(Radius_2DClGen / std::abs(rhEta - etaGen));
-	    h_rhGen_RadiusPdeta_Eta[etaBin]->Fill(Radius_2DClGen * std::abs(rhEta - etaGen));
-
-	    if(iRadBin != -1) {
-	      for(int ir=iRadBin; ir<=2; ++ir){
-		timePerEtaRadius[etaBin][ir] += rhTime; 
-		totRHPerEtaRadius[etaBin][ir] += 1;
-	      }
-	    }
-
-	    dPhivsDEta_Time->Fill(sqrt(pow(rhX - axX, 2)), sqrt(pow(rhY - axY, 2)), rhTime);
-	    dRvsDZ_Time->Fill(sqrt(pow(rhX - axX, 2) + pow(rhY - axY, 2)),  std::abs(rhZ - axZ), rhTime);
-
-	    h_allRH_TimesOfRadius->Fill(Radius_2DClGen);
-	    h2_allRH_TimesVsDRaxis->Fill(dR_2DClGen, rhTime);
-	    tp_allRH_TimesVsDRaxis->Fill(dR_2DClGen, rhTime);
-	    h2_allRH_TimesVsDEPaxis->Fill(sqrt(pow(rhX - axX, 2) + pow(rhY - axY, 2)), rhTime);
-	    tp_allRH_TimesVsDEPaxis->Fill(sqrt(pow(rhX - axX, 2) + pow(rhY - axY, 2)), rhTime);
-	    h2_allRH_TimesVsRadiusaxis->Fill(Radius_2DClGen, rhTime);
-	    tp_allRH_TimesVsRadiusaxis->Fill(Radius_2DClGen, rhTime);
-	  }
-	  
+	  h2_dPhiMatchHittoGen_vsPt->Fill(it_caloPart->pt(), reco::deltaPhi(rhPhi, it_caloPart->phi()));
+	  h_dPhiMatchHittoGen->Fill(reco::deltaPhi(rhPhi, it_caloPart->phi()));
+	  h_dR_MatchHit_Gen->Fill(Radius_2DClGen);
 	}
       }// first loop over rechits
 
 
-      //second to select seed layer
-      for (std::vector<std::pair<uint32_t,float> >::const_iterator it_haf = hits_and_fractions.begin(); it_haf != hits_and_fractions.end(); ++it_haf) {
-        DetId hitid = (it_haf->first);
-
-        bool found = false;
-        float rhTime = -1;
-
-	std::map<DetId, const HGCRecHit*>::iterator trovatore = hitmap.find(hitid);
-        if(trovatore == hitmap.end()){
-          continue;
-        }
-        else{
-	  const HGCRecHit *hit = hitmap[hitid];
-          rhTime = hit->time() - 1;
-          found = true;
-        }
-        if(found && recHitTools.getLayerWithOffset(hitid) == allRHSeedLayer){
-	  float rhEta = recHitTools.getEta(hitid);
-	  float rhPhi = recHitTools.getPhi(hitid);
-	  h2_dPhivsdEta_rhGen_fixL->Fill(reco::deltaPhi(rhPhi, it_caloPart->phi()), rhEta - it_caloPart->eta());
-
-	  float dRwrtGen1 = reco::deltaR(etaGen, rhEta, phiGen, rhPhi);
-
-	  float rhX = recHitTools.getPosition(hitid).x();
-	  float rhY = recHitTools.getPosition(hitid).y();
-	  float rhL = recHitTools.getLayerWithOffset(hitid);
-	  
-	  float dRwrtGen = utilsMet.dsGenRecHit(etaGen, phiGen, rhL, rhX, rhY);
-	  
-	  h_rHGen_dR_fixL->Fill(dRwrtGen);
-
-	  int etaBin = int((std::abs(etaGen) - 1.5) / 0.2);
-	  int iRadBin = -1;
-	  for(int ir=0; ir<2; ++ir){
-            if(dRwrtGen < radiusEtaRad[etaBin][ir]) {
-              iRadBin = ir;
-              break;
-            }
-          }
-
-          if(iRadBin != -1){
-	    for(int ir=iRadBin; ir<=1; ++ir) totRHPerEtaRadius_allTime_fixL[etaBin][ir] += 1;
-	  }
-
-
-	  if(rhTime > -1.){
-	    //	    int timesOfdR = int(dRwrtGen1 / recHitTools.getRadiusToSide(hitid) );
-	    //  int timesOfdR = int(dRwrtGen1);
-
-	    h2_allRH_TimesVsDRaxis_fixL->Fill(dRwrtGen1, rhTime);
-	    tp_allRH_TimesVsDRaxis_fixL->Fill(dRwrtGen1, rhTime);
-
-	    int timesOfRadius = int(dRwrtGen);
-
-	    if(iRadBin != -1) {
-	      for(int ir=0; ir<=iRadBin; ++ir){
-		timePerEtaRadius_fixL[etaBin][ir] += rhTime;
-		totRHPerEtaRadius_fixL[etaBin][ir] += 1;
-	      }
-	    }
-
-
-	    h_allRH_TimesOfRadius_fixL->Fill(dRwrtGen);
-	    h2_allRH_TimesVsRadiusaxis_fixL->Fill(dRwrtGen, rhTime);
-            tp_allRH_TimesVsRadiusaxis_fixL->Fill(dRwrtGen, rhTime);
-
-	    if(timesOfRadius < 5) h_allhitTimeinRing_wrtGen_fixL[timesOfRadius]->Fill(rhTime);
-	    else h_allhitTimeinRing_wrtGen_fixL[5]->Fill(rhTime);
-	  }
-	}
-      }
-
-
-      for(int iet=0; iet<8; ++iet){
-	for(int irad=0; irad<3; ++irad){
-	  totEvtsEtaRadius[iet][irad] += 1;
-
-	  if(totRHPerEtaRadius[iet][irad] < 3) continue;
-
-	  totEvtsEtaRadius_withTime[iet][irad] += 1;
-	  // std::cout << " totRHPerEtaRadius[iet][irad] = " << totRHPerEtaRadius[iet][irad] << std::endl;
-	  // std::cout << " totRHPerEtaRadius_allTime[iet][irad] = " << totRHPerEtaRadius_allTime[iet][irad] << std::endl;
-	  if(totRHPerEtaRadius[iet][irad] != 0)
-	    hAverageTime_Eta_dRadius[iet][irad]->Fill(1.*timePerEtaRadius[iet][irad]/totRHPerEtaRadius[iet][irad]);
-	  if(totRHPerEtaRadius_allTime[iet][irad] != 0){
-	    //	    std::cout << " frazione = " << 1.*totRHPerEtaRadius[iet][irad]/totRHPerEtaRadius_allTime[iet][irad] << std::endl;
-	    hFractionHitsWithTime_Eta_dRadius[iet][irad]->Fill(1.*totRHPerEtaRadius[iet][irad]/totRHPerEtaRadius_allTime[iet][irad]);	  
-	    tpFractionHitsWithTime_Eta_dRadius_vsPt[iet][irad]->Fill(it_caloPart->energy(), 1.*totRHPerEtaRadius[iet][irad]/totRHPerEtaRadius_allTime[iet][irad]);
-	    hTotHits_Eta_dRadius[iet][irad]->Fill(totRHPerEtaRadius_allTime[iet][irad]);
-	    hTotHitsWithTime_Eta_dRadius[iet][irad]->Fill(totRHPerEtaRadius[iet][irad]);
-	  }
-	  if(irad > 1) continue;
-	  if(totRHPerEtaRadius_fixL[iet][irad] != 0)
-	    hAverageTime_Eta_dRadius_fixL[iet][irad]->Fill(1.*timePerEtaRadius_fixL[iet][irad]/totRHPerEtaRadius_fixL[iet][irad]);
-	  if(totRHPerEtaRadius_allTime_fixL[iet][irad] != 0){
-	    hFractionHitsWithTime_Eta_dRadius_fixL[iet][irad]->Fill(1.*totRHPerEtaRadius_fixL[iet][irad]/totRHPerEtaRadius_allTime_fixL[iet][irad]);	  
-	    hTotHits_Eta_dRadius_fixL[iet][irad]->Fill(totRHPerEtaRadius_allTime_fixL[iet][irad]);
-	    hTotHitsWithTime_Eta_dRadius_fixL[iet][irad]->Fill(totRHPerEtaRadius_fixL[iet][irad]);
-	  }
-	}
-      }
-
+      //second to select seed layer => not needed
+      
     }
+
     h_mtcRHSumE -> Fill(sumMtcRHEnergy/it_caloPart->energy());
     for(int ij=0; ij<5; ++ij){
       tp_mtcRHSumE_vsDR_wrtGen->Fill(ij, sumMtcRHEnergy_vsDR_wrtGen[ij]/it_caloPart->energy());
-      //tp_mtcRHSumE_vsDR_wrtMCl->Fill(ij, sumMtcRHEnergy_vsDR_wrtGen[ij]/it_caloPart->energy());
       tp_mtcRHSumE_vsRadius_wrtGen->Fill(ij, sumMtcRHEnergy_vsRadius_wrtGen[ij]/it_caloPart->energy());
-      //tp_mtcRHSumE_vsRadius_wrtMCl;
     }
-
 
   }//caloparticle
 
@@ -1196,11 +974,6 @@ void
 HGCalAxisAnalyzer::endJob()
 {
 
-  for(int iet=0; iet<8; ++iet){
-    for(int irad=0; irad<3; ++irad){
-    if(totEvtsEtaRadius[iet][irad] != 0)  hFractionEvents_HitsWithTime_Eta_dRadius[iet][irad]->Fill(1.*totEvtsEtaRadius_withTime[iet][irad]/totEvtsEtaRadius[iet][irad]);
-    }
-  }
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

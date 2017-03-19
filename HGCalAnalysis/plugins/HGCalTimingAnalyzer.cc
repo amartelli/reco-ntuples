@@ -50,7 +50,7 @@
 //#include "RecoNtuples/HGCalTimingAnalyzer/interface/AObData.h"
 
 
-#include "HGCalCalibration/HitValidation/interface/UsefulClasses.h"
+#include "RecoNtuples/HGCalAnalysis/interface/UsefulClasses.h"
 //#include "../utils/UsefulClasses.cpp"
 
 #include <string>
@@ -928,6 +928,8 @@ HGCalTimingAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
           found = true;
         }
         if(found && recHitTools.getLayerWithOffset(hitid) == allRHSeedLayer){
+
+	  std::cout << " >>> " << std::endl;
 	  float rhEta = recHitTools.getEta(hitid);
 	  float rhPhi = recHitTools.getPhi(hitid);
 	  h2_dPhivsdEta_rhGen_fixL->Fill(reco::deltaPhi(rhPhi, it_caloPart->phi()), rhEta - it_caloPart->eta());
