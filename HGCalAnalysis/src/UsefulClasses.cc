@@ -15,7 +15,6 @@
 // using std::map;
 
 
-
 UsefulClasses::UsefulClasses(float genEta, float genPhi):_genEta(genEta), _genPhi(genPhi)
 {}
 
@@ -111,6 +110,75 @@ UsefulClasses::~UsefulClasses(){
     float z = lToZ[ layer ];
     if( eta < 0 ) z *= -1.;
     return z;
+}
+
+
+int UsefulClasses::Ztolayer(float z, float eta ) 
+{
+    map<int, float> lToZ;
+    lToZ[0]  = 320.75;
+    lToZ[1]  = 321.50;
+    lToZ[2]  = 322.73;
+    lToZ[3]  = 323.48;
+    lToZ[4]  = 324.71;
+    lToZ[5]  = 325.46;
+    lToZ[6]  = 326.69;
+    lToZ[7]  = 327.44;
+    lToZ[8]  = 328.67;
+    lToZ[9]  = 329.42; //first set
+    lToZ[10] = 330.73;
+    lToZ[11] = 331.60;
+    lToZ[12] = 332.91;
+    lToZ[13] = 333.78;
+    lToZ[14] = 335.09;
+    lToZ[15] = 335.96;
+    lToZ[16] = 337.27;
+    lToZ[17] = 338.14;
+    lToZ[18] = 339.45;
+    lToZ[19] = 340.32; //second set
+    lToZ[20] = 341.77;
+    lToZ[21] = 342.84;
+    lToZ[22] = 344.29;
+    lToZ[23] = 345.36;
+    lToZ[24] = 346.81;
+    lToZ[25] = 347.88;
+    lToZ[26] = 349.33;
+    lToZ[27] = 350.40; //third set
+    lToZ[28] = 356.33;
+    lToZ[29] = 361.01;
+    lToZ[30] = 365.69;
+    lToZ[31] = 370.37;
+    lToZ[32] = 375.05;
+    lToZ[33] = 379.73;
+    lToZ[34] = 384.41;
+    lToZ[35] = 389.09;
+    lToZ[36] = 393.77;
+    lToZ[37] = 398.45;
+    lToZ[38] = 403.13;
+    lToZ[39] = 407.81; //fourth set
+    
+    // float zedValue = (z > 0 ? z : -1.*z);
+    // int layerOK = find(lToZ.begin(), lToZ.end(), zedValue)->first;
+ 
+   unsigned int nstep = 0;
+    std::map<int,float>::iterator it2 = lToZ.begin();
+    ++it2;
+
+    int layer = 0;
+    for(std::map<int,float>::iterator it=lToZ.begin(); it!=lToZ.end(); ++it){
+      if(nstep >= lToZ.size()-1) continue;
+      //      std::cout << " it->second = " << it->second << " (it2)->second = " << (it2)->second << std::endl; 
+      if(eta < 0 && z * -1. >= it->second && z * -1. < (it2)->second) layer = it->first;
+      else{
+	if(z >= it->second && z < (it2)->second) layer = it->first;
+      }
+      ++nstep;
+      ++it2;
+    }
+
+    //    std::cout << " func Z = " << z << " layer = " << layer << std::endl;
+    //    if(layerOK != layer) std::cout << " BIG PROOOOOBLEM " << std::endl;
+    return layer;
 }
 
  float UsefulClasses::dsGenRecHit(float genEta, float genPhi, int recHitLayer, float recHitX, float recHitY )

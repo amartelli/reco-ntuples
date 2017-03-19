@@ -49,6 +49,7 @@ class UsefulClasses {
   float etaPhiZtoY( float eta, float phi, float z );
   // go from HGC layer to z in cm
   float layerToZ( int layer, float eta );
+  int Ztolayer(float z, float eta );
   
   float dsGenRecHit(float genEta, float genPhi, int recHitLayer, float recHitX, float recHitY );
   float dsGenRecoObj(float genEta, float genPhi, float recoObjZ, float recoObjX, float recoObjY );
