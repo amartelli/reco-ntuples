@@ -144,8 +144,8 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
       float SoverN = energyMIP / sigmaNoiseMIP;
       double smearedTime = getTimeHit(thick, SoverN);
       //      std::cout << " smeared time  = " << smearedTime << " SoverN = " << SoverN << " thick = " << thick << std::endl;
-      if(energyMIP*fCPerMIP[thick] > 60 && myrechit.time() != -1.) myrechit.setTime(myrechit.time() * (1+smearedTime));
-      else myrechit.setTime(-1.); 
+      //cross-check with Sapta for selection on original time
+      myrechit.setTime(myrechit.time() * (1+smearedTime));
     }
     else myrechit.setTime(-1.); 
     Newrechits->push_back(myrechit);
