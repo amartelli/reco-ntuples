@@ -39,7 +39,7 @@ RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
   //cell type
   fCPerMIP[0] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(0);
   fCPerMIP[1] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(1);
-  fCPerMIP[3] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(2);
+  fCPerMIP[2] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(2);
 
   const auto& rcorr = ps.getParameter<std::vector<double> >("thicknessCorrection");
   scaleCorrection.clear();
