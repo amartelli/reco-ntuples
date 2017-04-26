@@ -108,6 +108,18 @@ double RecHiTimeEstimator::getTimeHit(int thick, double SoverN){
 }
 
 
+
+double RecHiTimeEstimator::getTimeHitFixThr(){
+  //  std::cout << " >>> getTimeHit  " << std::endl;
+
+  double sigma = 0.05;
+
+  TRandom3* rand = new TRandom3(); 
+  double smearing = rand->Gaus(0., sigma);
+  return smearing;
+}
+
+
 void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits){
   //  std::cout << " >>> correctTime  " << std::endl;
   const CaloGeometry* caloGeom = pG.product();
@@ -140,12 +152,41 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
     else energyMIP = energy/scaleCorrection[thick]/keV2GeV / (weights.at(layer-1)/keV2MeV);
 
 
-    if(energyMIP > 3.){
+    if(energyMIP > 3. && myrechit.time() >= 0.){
       float SoverN = energyMIP / sigmaNoiseMIP;
       double smearedTime = getTimeHit(thick, SoverN);
       //      std::cout << " smeared time  = " << smearedTime << " SoverN = " << SoverN << " thick = " << thick << std::endl;
       //cross-check with Sapta for selection on original time
-      myrechit.setTime(myrechit.time() * (1+smearedTime));
+      myrechit.setTime((myrechit.time() - 1.) * (1+smearedTime));
+    }
+    else myrechit.setTime(-1.); 
+    Newrechits->push_back(myrechit);
+  }
+  return;
+}
+
+
+void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits){
+  //  std::cout << " >>> correctTime  " << std::endl;
+  for(HGCRecHitCollection::const_iterator it_hit = rechits.begin(); it_hit < rechits.end(); ++it_hit) {
+    const HGCalDetId detid = it_hit->detid();
+    unsigned int layer = detid.layer();
+
+    int sectionType = 2;
+    if(layer < 29) sectionType = 0;
+    else if(layer < 41) sectionType = 1;
+
+    HGCRecHit myrechit(*it_hit);
+    float energy = myrechit.energy();
+
+    float energyCharge = 0.;
+    // from SimCalorimetry/HGCalSimProducers/src/HGCHEbackDigitizer.cc L 58
+    if(sectionType == 2) energyCharge = energy * 1.e6 * 1.; 
+    else energyCharge = energy * 1.e6 * keV2fC[sectionType];
+
+    if(energyCharge > 60 && myrechit.time() >= 0.){
+      double smearedTime = getTimeHitFixThr();
+      myrechit.setTime((myrechit.time() - 1.) * (1+smearedTime));
     }
     else myrechit.setTime(-1.); 
     Newrechits->push_back(myrechit);
