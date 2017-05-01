@@ -1,5 +1,6 @@
 // user include files
 #include <TH1F.h>
+#include <TH2F.h>
 #include <TF1.h>
 #include <TCanvas.h>
 #include "TRandom3.h"
@@ -22,10 +23,13 @@
 #include "Geometry/HGCalGeometry/interface/HGCalGeometry.h"
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "Geometry/HGCalCommonData/interface/HGCalDDDConstants.h"
+#include "Geometry/HcalCommonData/interface/HcalDDDRecConstants.h"
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
 #include "RecoNtuples/HGCalAnalysis/plugins/RecHiTimeEstimator.h"
+#include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
 
 RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
+
   //  std::cout << " >>> constructor " << std::endl;
   //section type
   keV2fC[0] =  ps.getParameter<double>("HGCEE_keV2fC");
@@ -43,7 +47,6 @@ RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
 
   const auto& rcorr = ps.getParameter<std::vector<double> >("thicknessCorrection");
   scaleCorrection.clear();
-  scaleCorrection.push_back(1.f);
   for( auto corr : rcorr ) {
     scaleCorrection.push_back(1.0/corr);
   }
@@ -79,18 +82,7 @@ RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
 
 
 void RecHiTimeEstimator::setEventSetup(const edm::EventSetup& es){
-  es.get<CaloGeometryRecord>().get(pG);
-}
-
-
-const HGCalDDDConstants* RecHiTimeEstimator::get_ddd(const CaloSubdetectorGeometry* geom){
-  const HGCalGeometry* hg = static_cast<const HGCalGeometry*>(geom);
-  const HGCalDDDConstants* ddd = &(hg->topology().dddConstants());
-  if( nullptr == ddd ) {
-    throw cms::Exception("hgcal::RecHitTools")
-      << "DDDConstants not accessibl to hgcal::RecHitTools!";
-  }
-  return ddd;
+  recHitTools.getEventSetup(es);
 }
 
 
@@ -122,13 +114,12 @@ double RecHiTimeEstimator::getTimeHitFixThr(){
 
 void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits){
   //  std::cout << " >>> correctTime  " << std::endl;
-  const CaloGeometry* caloGeom = pG.product();
 
   for(HGCRecHitCollection::const_iterator it_hit = rechits.begin(); it_hit < rechits.end(); ++it_hit) {
-    const HGCalDetId detid = it_hit->detid();
-    auto ddd = get_ddd(caloGeom->getSubdetectorGeometry(detid));
-    int thick = ddd->waferTypeL(detid.wafer()) - 1;
-    unsigned int layer = detid.layer();
+    const DetId detid = it_hit->detid();
+
+    unsigned int layer = recHitTools.getLayerWithOffset(detid);
+    int thick = recHitTools.getSiThickness(detid) / 100. - 1.;
 
     int sectionType = 2;
     if(layer < 29) sectionType = 0;
@@ -137,26 +128,17 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
     double sigmaNoiseMIP = noiseMIP;
     if(sectionType != 2) sigmaNoiseMIP = noisefC[sectionType]/fCPerMIP[thick];
 
-    // double keVtoMip = keV2fC[sectionType]/fCPerMIP[thick];
-    // if(sectionType == 2) keVtoMip = keV2MIP;
-
-    // double sigmaNoise = sigmaNoiseMIP / keV2MIP * (weights.at(layer-1)/keV2MeV*keV2MIP) * keV2GeV * scaleCorrection[thick];
-    // if(sectionType != 2) sigmaNoise = sigmaNoiseMIP * (weights.at(layer-1)/keV2MeV*keVtoMip) / keVtoMip * keV2GeV * scaleCorrection[thick];
-
-
     HGCRecHit myrechit(*it_hit);
     float energy = myrechit.energy();
 
     int energyMIP = 0.;
-    if(sectionType == 2) energyMIP = energy/scaleCorrection[thick]/keV2GeV / (weights.at(layer-1)/keV2MeV );
-    else energyMIP = energy/scaleCorrection[thick]/keV2GeV / (weights.at(layer-1)/keV2MeV);
+    if(sectionType == 2) energyMIP = energy/keV2GeV * keV2MIP;
+    else energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
 
 
     if(energyMIP > 3. && myrechit.time() >= 0.){
       float SoverN = energyMIP / sigmaNoiseMIP;
       double smearedTime = getTimeHit(thick, SoverN);
-      //      std::cout << " smeared time  = " << smearedTime << " SoverN = " << SoverN << " thick = " << thick << std::endl;
-      //cross-check with Sapta for selection on original time
       myrechit.setTime((myrechit.time() - 1.) * (1+smearedTime));
     }
     else myrechit.setTime(-1.); 
@@ -168,9 +150,12 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
 
 void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits){
   //  std::cout << " >>> correctTime  " << std::endl;
+
   for(HGCRecHitCollection::const_iterator it_hit = rechits.begin(); it_hit < rechits.end(); ++it_hit) {
-    const HGCalDetId detid = it_hit->detid();
-    unsigned int layer = detid.layer();
+    const DetId detid = it_hit->detid();
+
+    unsigned int layer = recHitTools.getLayerWithOffset(detid);
+    int thick = recHitTools.getSiThickness(detid) / 100. - 1.;
 
     int sectionType = 2;
     if(layer < 29) sectionType = 0;
@@ -179,10 +164,14 @@ void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, H
     HGCRecHit myrechit(*it_hit);
     float energy = myrechit.energy();
 
+    int energyMIP = 0.;
+    if(sectionType == 2) energyMIP = energy/keV2GeV * keV2MIP;
+    else energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
+
     float energyCharge = 0.;
     // from SimCalorimetry/HGCalSimProducers/src/HGCHEbackDigitizer.cc L 58
-    if(sectionType == 2) energyCharge = energy * 1.e6 * 1.; 
-    else energyCharge = energy * 1.e6 * keV2fC[sectionType];
+    if(sectionType == 2) energyCharge = energyMIP * 1.; 
+    else energyCharge = energyMIP * fCPerMIP[thick];
 
     if(energyCharge > 60 && myrechit.time() >= 0.){
       double smearedTime = getTimeHitFixThr();

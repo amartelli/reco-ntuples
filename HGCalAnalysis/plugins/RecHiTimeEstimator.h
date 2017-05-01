@@ -3,6 +3,7 @@
 
 // user include files
 #include <TH1F.h>
+#include <TH2F.h>
 #include <TF1.h>
 #include <TCanvas.h>
 
@@ -25,6 +26,9 @@
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "Geometry/HGCalCommonData/interface/HGCalDDDConstants.h"
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
+//#include "Geometry/HcalCommonData/interface/HcalDDDRecConstants.h"
+
+#include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
 
 #include "TRandom3.h"
 #include "TProfile.h"
@@ -38,14 +42,16 @@ public:
   explicit RecHiTimeEstimator(const edm::ParameterSet& ps);
   ~RecHiTimeEstimator();
 
-
-  const HGCalDDDConstants* get_ddd(const CaloSubdetectorGeometry* geom);  
   double getTimeHit(int thick, double SoverN);
+  double getTimeHitFixThr();
   void correctTime(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits);
+  void correctTimeFixThr(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits);
 
   void setEventSetup(const edm::EventSetup& es);
 
 private:
+
+  hgcal::RecHitTools recHitTools;
 
   TF1* timeResolution;
 
@@ -68,9 +74,6 @@ private:
 
   //for cell type
   double fCPerMIP[3];
-
-
-  edm::ESHandle<CaloGeometry> pG;
 };
 
 #endif
