@@ -118,23 +118,30 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
   for(HGCRecHitCollection::const_iterator it_hit = rechits.begin(); it_hit < rechits.end(); ++it_hit) {
     const DetId detid = it_hit->detid();
 
-    unsigned int layer = recHitTools.getLayerWithOffset(detid);
-    int thick = recHitTools.getSiThickness(detid) / 100. - 1.;
+    int thick = (detid.det() != DetId::Forward) ? -1 : recHitTools.getSiThickness(detid) / 100. - 1.;
 
-    int sectionType = 2;
-    if(layer < 29) sectionType = 0;
-    else if(layer < 41) sectionType = 1;
-
-    double sigmaNoiseMIP = noiseMIP;
-    if(sectionType != 2) sigmaNoiseMIP = noisefC[sectionType]/fCPerMIP[thick];
+    int sectionType = -1;
+    if(detid.subdetId() == HGCEE) sectionType = 0;
+    else if(detid.subdetId() == HGCHEF) sectionType = 1;
+    else if(detid.subdetId() == HGCHEB) sectionType = 2;
 
     HGCRecHit myrechit(*it_hit);
     float energy = myrechit.energy();
 
+    if(sectionType == -1 || thick == -1){
+      myrechit.setTime(-1.);
+      Newrechits->push_back(myrechit);
+      continue;
+    }
+
+    unsigned int layer = recHitTools.getLayerWithOffset(detid);
+
+    double sigmaNoiseMIP = noiseMIP;
+    if(sectionType != 2) sigmaNoiseMIP = noisefC[sectionType]/fCPerMIP[thick];
+
     int energyMIP = 0.;
     if(sectionType == 2) energyMIP = energy/keV2GeV * keV2MIP;
     else energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
-
 
     if(energyMIP > 3. && myrechit.time() >= 0.){
       float SoverN = energyMIP / sigmaNoiseMIP;
@@ -154,15 +161,29 @@ void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, H
   for(HGCRecHitCollection::const_iterator it_hit = rechits.begin(); it_hit < rechits.end(); ++it_hit) {
     const DetId detid = it_hit->detid();
 
-    unsigned int layer = recHitTools.getLayerWithOffset(detid);
-    int thick = recHitTools.getSiThickness(detid) / 100. - 1.;
+    int thick = (detid.det() != DetId::Forward) ? -1 : recHitTools.getSiThickness(detid) / 100. - 1.;
 
-    int sectionType = 2;
-    if(layer < 29) sectionType = 0;
-    else if(layer < 41) sectionType = 1;
+    int sectionType = -1;
+    if(detid.subdetId() == HGCEE) sectionType = 0;
+    else if(detid.subdetId() == HGCHEF) sectionType = 1;
+    else if(detid.subdetId() == HGCHEB) sectionType = 2;
+
+    if(detid.det() == DetId::Forward) std::cout << " DetId::Forward = " << detid.det() << std::endl;
+    if(detid.subdetId() == HGCEE) std::cout << " HGCEE = " << detid.subdetId() << std::endl;
+    if(detid.subdetId() == HGCHEF) std::cout << " HGCHEF = " << detid.subdetId() << std::endl;
+    if(detid.subdetId() == HGCHEB) std::cout << " HGCHEB = " << detid.subdetId() << std::endl;
+
 
     HGCRecHit myrechit(*it_hit);
     float energy = myrechit.energy();
+
+    if(sectionType == -1 || thick == -1){
+      myrechit.setTime(-1.);
+      Newrechits->push_back(myrechit);
+      continue;
+    }
+
+    unsigned int layer = recHitTools.getLayerWithOffset(detid);
 
     int energyMIP = 0.;
     if(sectionType == 2) energyMIP = energy/keV2GeV * keV2MIP;
