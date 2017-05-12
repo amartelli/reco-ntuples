@@ -87,12 +87,12 @@ void RecHiTimeEstimator::setEventSetup(const edm::EventSetup& es){
 
 
 double RecHiTimeEstimator::getTimeHit(int thick, double SoverN){
-  //  std::cout << " >>> getTimeHit  " << std::endl;
   timeResolution->SetParameters(paramA[thick], paramC[thick]);
 
+  //resolution from TB results with floor of 20ps at high S/N
   double sigma = 0.2;
-  if(SoverN > 1000) return paramC[thick];
-  else sigma = timeResolution->Eval(SoverN);
+  if(SoverN > 1) sigma = timeResolution->Eval(SoverN);
+  if(SoverN > 20) sigma = 0.02;
 
   TRandom3* rand = new TRandom3(); 
   double smearing = rand->Gaus(0., sigma);
@@ -102,8 +102,7 @@ double RecHiTimeEstimator::getTimeHit(int thick, double SoverN){
 
 
 double RecHiTimeEstimator::getTimeHitFixThr(){
-  //  std::cout << " >>> getTimeHit  " << std::endl;
-
+  //flat resolution at 50ps
   double sigma = 0.05;
 
   TRandom3* rand = new TRandom3(); 
@@ -113,7 +112,6 @@ double RecHiTimeEstimator::getTimeHitFixThr(){
 
 
 void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits){
-  //  std::cout << " >>> correctTime  " << std::endl;
 
   for(HGCRecHitCollection::const_iterator it_hit = rechits.begin(); it_hit < rechits.end(); ++it_hit) {
     const DetId detid = it_hit->detid();
@@ -126,7 +124,8 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
     else if(detid.subdetId() == HGCHEB) sectionType = 2;
 
     HGCRecHit myrechit(*it_hit);
-    float energy = myrechit.energy();
+    float energy = it_hit->energy();
+    float time = it_hit->time();
 
     if(sectionType == -1 || thick == -1){
       myrechit.setTime(-1.);
@@ -141,14 +140,15 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
 
     int energyMIP = 0.;
     if(sectionType == 2) energyMIP = energy/keV2GeV * keV2MIP;
-    else energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
+    else if(sectionType == 0 || sectionType == 1) energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
 
-    if(energyMIP > 3. && myrechit.time() >= 0.){
+    if(energyMIP > 3.){
       float SoverN = energyMIP / sigmaNoiseMIP;
       double smearedTime = getTimeHit(thick, SoverN);
-      myrechit.setTime((myrechit.time() - 1.) * (1+smearedTime));
+      myrechit.setTime((time - 1.) * (1+smearedTime) + 1.);
     }
     else myrechit.setTime(-1.); 
+
     Newrechits->push_back(myrechit);
   }
   return;
@@ -156,11 +156,9 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
 
 
 void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits){
-  //  std::cout << " >>> correctTime  " << std::endl;
 
   for(HGCRecHitCollection::const_iterator it_hit = rechits.begin(); it_hit < rechits.end(); ++it_hit) {
     const DetId detid = it_hit->detid();
-
     int thick = (detid.det() != DetId::Forward) ? -1 : recHitTools.getSiThickness(detid) / 100. - 1.;
 
     int sectionType = -1;
@@ -168,18 +166,14 @@ void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, H
     else if(detid.subdetId() == HGCHEF) sectionType = 1;
     else if(detid.subdetId() == HGCHEB) sectionType = 2;
 
-    if(detid.det() == DetId::Forward) std::cout << " DetId::Forward = " << detid.det() << std::endl;
-    if(detid.subdetId() == HGCEE) std::cout << " HGCEE = " << detid.subdetId() << std::endl;
-    if(detid.subdetId() == HGCHEF) std::cout << " HGCHEF = " << detid.subdetId() << std::endl;
-    if(detid.subdetId() == HGCHEB) std::cout << " HGCHEB = " << detid.subdetId() << std::endl;
-
-
     HGCRecHit myrechit(*it_hit);
-    float energy = myrechit.energy();
+    float energy = it_hit->energy();
+    float time = it_hit->time();
 
     if(sectionType == -1 || thick == -1){
       myrechit.setTime(-1.);
       Newrechits->push_back(myrechit);
+
       continue;
     }
 
@@ -187,18 +181,20 @@ void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, H
 
     int energyMIP = 0.;
     if(sectionType == 2) energyMIP = energy/keV2GeV * keV2MIP;
-    else energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
+    else if(sectionType == 1 || sectionType == 0) energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
 
     float energyCharge = 0.;
     // from SimCalorimetry/HGCalSimProducers/src/HGCHEbackDigitizer.cc L 58
     if(sectionType == 2) energyCharge = energyMIP * 1.; 
-    else energyCharge = energyMIP * fCPerMIP[thick];
+    else if(sectionType == 1 || sectionType == 0) energyCharge = energyMIP * fCPerMIP[thick];
 
-    if(energyCharge > 60 && myrechit.time() >= 0.){
+
+    if(energyCharge > 60){
       double smearedTime = getTimeHitFixThr();
-      myrechit.setTime((myrechit.time() - 1.) * (1+smearedTime));
+      myrechit.setTime((time-1) * (1+smearedTime) + 1.);
     }
     else myrechit.setTime(-1.); 
+
     Newrechits->push_back(myrechit);
   }
   return;

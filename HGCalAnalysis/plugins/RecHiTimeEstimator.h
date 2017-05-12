@@ -26,7 +26,6 @@
 #include "DataFormats/HcalDetId/interface/HcalDetId.h"
 #include "Geometry/HGCalCommonData/interface/HGCalDDDConstants.h"
 #include "DataFormats/HGCRecHit/interface/HGCRecHitCollections.h"
-//#include "Geometry/HcalCommonData/interface/HcalDDDRecConstants.h"
 
 #include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
 
