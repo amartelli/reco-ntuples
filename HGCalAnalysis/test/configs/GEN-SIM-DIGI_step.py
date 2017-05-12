@@ -3,21 +3,20 @@
 # Revision: 1.19
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v
 # with command line options: SingleGammaPt35_cfi --conditions auto:run2_mc -n 10 --era Phase2C2 --eventcontent FEVTDEBUGHLT --relval 10000,100 -s GEN,SIM,DIGI:pdigi_valid,L1,DIGI2RAW,HLT:@fake --datatier GEN-SIM-DIGI-RAW --beamspot Realistic50ns13TeVCollision --customise SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023tilted --geometry Extended2023D3 --no_exec --fileout file:step1_DIGIRAW.root
-
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
 
-process = cms.Process('DIGI',eras.Phase2C2_timing)
+process = cms.Process('HLT',eras.Phase2C2_timing)
 
-##changing the TDC threshold for timing computation in HGC  
+##changing the TDC threshold for timing computatio                                                                                                                   
 from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import hgchefrontDigitizer
 hgchefrontDigitizer.digiCfg.feCfg.tdcForToaOnset_fC = cms.double(3.)
 
 from SimCalorimetry.HGCalSimProducers.hgcalDigitizer_cfi import hgceeDigitizer
 hgceeDigitizer.digiCfg.feCfg.tdcForToaOnset_fC = cms.double(3.)
 
-# import of standard configurations  
+# import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
@@ -34,30 +33,25 @@ process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 process.load('Configuration.StandardSequences.L1TrackTrigger_cff')
 process.load('Configuration.StandardSequences.DigiToRaw_cff')
-#process.load('HLTrigger.Configuration.HLT_Fake2_cff') 
+#process.load('HLTrigger.Configuration.HLT_Fake2_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
-
-
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1)
+    input = cms.untracked.int32(50)
 )
 
+# random seeds
+process.RandomNumberGeneratorService.generator.initialSeed = cms.untracked.uint32(10)
+process.RandomNumberGeneratorService.VtxSmeared.initialSeed = cms.untracked.uint32(10)
 
 # Input source
-process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring(
-        "/store/cmst3/group/hgcal/CMG_studies/Production/partGun_mabeguin_PGDid11_E30_20170306/GSD/partGun_PDGid11_x100_E30.0To35.0_GSD_1.root"
-        ),
-                            duplicateCheckMode = cms.untracked.string('noDuplicateCheck'),
-                            secondaryFileNames = cms.untracked.vstring()
-                            )
-
+process.source = cms.Source("EmptySource")
+process.source.firstLuminosityBlock = cms.untracked.uint32(10)
 
 process.options = cms.untracked.PSet(
-)
 
+)
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
@@ -67,56 +61,83 @@ process.configurationMetadata = cms.untracked.PSet(
 )
 
 # Output definition
+
 process.FEVTDEBUGHLToutput = cms.OutputModule("PoolOutputModule",
-     dataset = cms.untracked.PSet(
+    SelectEvents = cms.untracked.PSet(
+        SelectEvents = cms.vstring('generation_step')
+    ),
+    dataset = cms.untracked.PSet(
         dataTier = cms.untracked.string('GEN-SIM-DIGI-RAW'),
         filterName = cms.untracked.string('')
     ),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    fileName = cms.untracked.string('file:testReDigi.root'),
+    fileName = cms.untracked.string('file:partGun_PDGid130_x50_Pt5.0To5.0_GSD_10.root'),
     outputCommands = process.FEVTDEBUGHLTEventContent.outputCommands,
     splitLevel = cms.untracked.int32(0)
 )
 
 # Additional output definition
 
-
 # Other statements
 process.genstepfilter.triggerConditions=cms.vstring("generation_step")
+#mixNoPU_cfiSECTION
 process.mix.digitizers = cms.PSet(process.theDigitizersValid)
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase2_realistic', '')
 
+process.generator = cms.EDProducer("FlatRandomPtGunProducer",
+    AddAntiParticle = cms.bool(True),
+    PGunParameters = cms.PSet(
+        MaxEta = cms.double(3.0),
+        MaxPhi = cms.double(3.14159265359),
+        MaxPt = cms.double(5.0),
+        MinEta = cms.double(1.479),
+        MinPhi = cms.double(-3.14159265359),
+        MinPt = cms.double(5.0),
+        #DUMMYINCONESECTION
+        PartID = cms.vint32(130)
+    ),
+    Verbosity = cms.untracked.int32(0),
+    firstRun = cms.untracked.uint32(1),
+    psethack = cms.string('multiple particles predefined pT/E eta 1p479 to 3')
+)
 
 # Path and EndPath definitions
+process.generation_step = cms.Path(process.pgen)
+process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.pdigi_valid)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
+process.L1TrackTrigger_step = cms.Path(process.L1TrackTrigger)
 process.digi2raw_step = cms.Path(process.DigiToRaw)
+process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGHLToutput_step = cms.EndPath(process.FEVTDEBUGHLToutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.digitisation_step,process.L1simulation_step,process.digi2raw_step)
+process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.digitisation_step,process.L1simulation_step,process.digi2raw_step)
 #process.schedule.extend(process.HLTSchedule)
 process.schedule.extend([process.endjob_step,process.FEVTDEBUGHLToutput_step])
+# filter all path with the production filter sequence
+for path in process.paths:
+	getattr(process,path)._seq = process.generator * getattr(process,path)._seq
 
 #Setup FWK for multithreaded
 process.options.numberOfThreads=cms.untracked.uint32(4)
 process.options.numberOfStreams=cms.untracked.uint32(0)
 
 # customisation of the process.
-#process.genParticles.src = cms.InputTag("generator:unsmeared")
-
-# Automatic addition of the customisation function from SLHCUpgradeSimulations.Configuration.combinedCustoms
-#from SLHCUpgradeSimulations.Configuration.combinedCustoms import cust_2023tilted
-
-#call to customisation function cust_2023tilted imported from SLHCUpgradeSimulations.Configuration.combinedCustoms
-#process = cust_2023tilted(process)
 
 # Automatic addition of the customisation function from HLTrigger.Configuration.customizeHLTforMC
-#from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforFullSim
+#from HLTrigger.Configuration.customizeHLTforMC import customizeHLTforMC
 
-#call to customisation function customizeHLTforFullSim imported from HLTrigger.Configuration.customizeHLTforMC
-#process = customizeHLTforFullSim(process)
+#call to customisation function customizeHLTforMC imported from HLTrigger.Configuration.customizeHLTforMC
+#process = customizeHLTforMC(process)
 
 # End of customisation functions
+
+# Customisation from command line
+
+# Add early deletion of temporary data products to reduce peak memory need
+from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
+process = customiseEarlyDelete(process)
+# End adding early deletion
