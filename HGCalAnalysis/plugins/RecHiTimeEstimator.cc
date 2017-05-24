@@ -145,7 +145,7 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
     if(energyMIP > 3.){
       float SoverN = energyMIP / sigmaNoiseMIP;
       double smearedTime = getTimeHit(thick, SoverN);
-      myrechit.setTime((time - 1.) * (1+smearedTime) + 1.);
+      myrechit.setTime(time + smearedTime);
     }
     else myrechit.setTime(-1.); 
 
@@ -191,7 +191,7 @@ void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, H
 
     if(energyCharge > 60){
       double smearedTime = getTimeHitFixThr();
-      myrechit.setTime((time-1) * (1+smearedTime) + 1.);
+      myrechit.setTime(time + smearedTime);
     }
     else myrechit.setTime(-1.); 
 
