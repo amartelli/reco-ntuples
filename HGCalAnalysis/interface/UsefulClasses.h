@@ -53,6 +53,8 @@ class UsefulClasses {
   
   float dsGenRecHit(float genEta, float genPhi, int recHitLayer, float recHitX, float recHitY );
   float dsGenRecoObj(float genEta, float genPhi, float recoObjZ, float recoObjX, float recoObjY );
+
+  void layerIntersection(std::array<double,3> &to, const std::array<double,3> &from, const std::array<double,3> &fromB) const;
   
   vector<TH1*> initHists( string name );
   

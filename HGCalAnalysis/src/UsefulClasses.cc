@@ -178,7 +178,7 @@ int UsefulClasses::Ztolayer(float z, float eta )
 
     //    std::cout << " func Z = " << z << " layer = " << layer << std::endl;
     //    if(layerOK != layer) std::cout << " BIG PROOOOOBLEM " << std::endl;
-    return layer;
+    return layer+1;
 }
 
  float UsefulClasses::dsGenRecHit(float genEta, float genPhi, int recHitLayer, float recHitX, float recHitY )
@@ -202,6 +202,18 @@ int UsefulClasses::Ztolayer(float z, float eta )
 
     return ds; 
 }
+
+
+
+void UsefulClasses::layerIntersection(std::array<double,3> &to,
+				      const std::array<double,3> &from,
+				      const std::array<double,3> &fromB
+				      ) const
+{
+  to[0]=(from[0]-fromB[0]) / (from[2] - fromB[2]) * (to[2] - from[2]) + from[0];
+  to[1]=(from[1]-fromB[1]) / (from[2] - fromB[2]) * (to[2] - from[2]) + from[1];
+}
+
 
 
  vector<TH1*> UsefulClasses::initHists( string name )
