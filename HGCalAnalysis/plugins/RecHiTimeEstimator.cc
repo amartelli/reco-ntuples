@@ -97,14 +97,14 @@ void RecHiTimeEstimator::setEventSetup(const edm::EventSetup& es){
 }
 
 
-void RecHiTimeEstimator::setOptions(int cellType, float floor, int liveAge){
+void RecHiTimeEstimator::setOptions(int cellType, float floor, int lifeAge){
   if(cellType == 1){
     cellSize[0] = 0.5;
     cellSize[1] = 0.5;
     cellSize[2] = 0.5;
   }
   if(floor != 0.02) floorValue = floor;
-  if(liveAge == 1){
+  if(lifeAge == 1){
     chargeCollEff[0] = 0.5;
     chargeCollEff[1] = 0.5;
     chargeCollEff[2] = 0.7;

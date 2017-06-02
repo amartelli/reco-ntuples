@@ -38,12 +38,12 @@ using namespace std;
 
 //legend
 /*
-CS   = cell standard (1cm2)
-CH   = cell half (0.5cm2) => effect ~half timing resolution
-F20  = Floor 20ps time at high S/N
-F30  = Floor 30ps time at high S/N
-LB   = life at beginning for charge collection efficiency
-LE   = life end for charge collection efficiency (70% 50% 50% for 300, 200, 100)
+cellType 0 = cell standard (1cm2)
+cellType 1 = cell half (0.5cm2) => effect ~half timing resolution
+floor    0.02 = Floor 20ps time at high S/N
+floor    0.03 = Floor 30ps time at high S/N
+lifeAge   0 = life at beginning for charge collection efficiency
+lifeAge   1 = life end for charge collection efficiency (70% 50% 50% for 300, 200, 100)
 */
 
 
@@ -59,7 +59,7 @@ public:
   void correctTime(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits);
   void correctTimeFixThr(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits);
 
-  void setOptions(int cellType, float floor, int liveAge);
+  void setOptions(int cellType = 0, float floor = 0.02, int lifeAge = 0);
 
   /* void timeCSF20LB(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits); */
   /* void timeCSF30LB(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits); */

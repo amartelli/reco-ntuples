@@ -119,6 +119,20 @@ HGCTimeTester::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   myEstimator->setEventSetup(iSetup);
 
+  //possible options for cell Size, floor, aging
+  myEstimator->setOptions(1, 0.02, 0);
+  /*
+  myEstimator->setOptions(0, 0.02, 0);
+  myEstimator->setOptions(1, 0.02, 0);
+  myEstimator->setOptions(0, 0.03, 0);
+  myEstimator->setOptions(1, 0.03, 0);
+
+  myEstimator->setOptions(0, 0.02, 1);
+  myEstimator->setOptions(1, 0.02, 1);
+  myEstimator->setOptions(0, 0.03, 1);
+  myEstimator->setOptions(1, 0.03, 1);
+  */
+
   Handle<HGCRecHitCollection> recHitHandleEE;
   Handle<HGCRecHitCollection> recHitHandleFH;
   Handle<HGCRecHitCollection> recHitHandleBH;
