@@ -118,7 +118,7 @@ double RecHiTimeEstimator::getTimeHit(int thick, double SoverN){
   //resolution from TB results with floor of 20ps at high S/N
   double sigma = 0.2;
   if(SoverN > 1) sigma = timeResolution->Eval(SoverN);
-  if(SoverN > 20) sigma = floorValue;
+  if(sigma < floorValue) sigma = floorValue;
 
   TRandom3* rand = new TRandom3(); 
   double smearing = rand->Gaus(0., sigma);
