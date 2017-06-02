@@ -77,6 +77,17 @@ RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
   paramC[2] = 0.010;
   parErrC[2] = 0.001;
 
+  floorValue = 0.02;
+
+  chargeCollEff[0] = 1.;
+  chargeCollEff[1] = 1.;
+  chargeCollEff[2] = 1.;
+
+  cellSize[0] = 1.;
+  cellSize[1] = 1.;
+  cellSize[2] = 1.;
+
+
   timeResolution = new TF1("timeSi100", "sqrt(pow([0]/x/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
 }
 
@@ -86,13 +97,28 @@ void RecHiTimeEstimator::setEventSetup(const edm::EventSetup& es){
 }
 
 
+void RecHiTimeEstimator::setOptions(int cellType, float floor, int liveAge){
+  if(cellType == 1){
+    cellSize[0] = 0.5;
+    cellSize[1] = 0.5;
+    cellSize[2] = 0.5;
+  }
+  if(floor != 0.02) floorValue = floor;
+  if(liveAge == 1){
+    chargeCollEff[0] = 0.5;
+    chargeCollEff[1] = 0.5;
+    chargeCollEff[2] = 0.7;
+  }
+}
+
+
 double RecHiTimeEstimator::getTimeHit(int thick, double SoverN){
-  timeResolution->SetParameters(paramA[thick], paramC[thick]);
+  timeResolution->SetParameters(paramA[thick]*cellSize[thick], paramC[thick]);
 
   //resolution from TB results with floor of 20ps at high S/N
   double sigma = 0.2;
   if(SoverN > 1) sigma = timeResolution->Eval(SoverN);
-  if(SoverN > 20) sigma = 0.02;
+  if(SoverN > 20) sigma = floorValue;
 
   TRandom3* rand = new TRandom3(); 
   double smearing = rand->Gaus(0., sigma);
@@ -132,6 +158,8 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
       Newrechits->push_back(myrechit);
       continue;
     }
+
+    energy = it_hit->energy()*chargeCollEff[thick];
 
     unsigned int layer = recHitTools.getLayerWithOffset(detid);
 
