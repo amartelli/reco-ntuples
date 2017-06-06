@@ -4,6 +4,9 @@
 #include <TF1.h>
 #include <TCanvas.h>
 #include "TRandom3.h"
+#include <cstdlib>
+#include <ctime>
+
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -121,6 +124,7 @@ double RecHiTimeEstimator::getTimeHit(int thick, double SoverN){
   if(sigma < floorValue) sigma = floorValue;
 
   TRandom3* rand = new TRandom3(); 
+  rand->SetSeed(0);
   double smearing = rand->Gaus(0., sigma);
   return smearing;
 }
@@ -132,6 +136,7 @@ double RecHiTimeEstimator::getTimeHitFixThr(){
   double sigma = 0.05;
 
   TRandom3* rand = new TRandom3(); 
+  rand->SetSeed(0);
   double smearing = rand->Gaus(0., sigma);
   return smearing;
 }
