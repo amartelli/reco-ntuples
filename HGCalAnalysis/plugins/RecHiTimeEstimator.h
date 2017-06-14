@@ -56,6 +56,7 @@ public:
 
   double getTimeHit(int thick, double SoverN);
   double getTimeHitFixThr();
+  double getExpectedReso(const DetId detid, double energy);
   void correctTime(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits);
   void correctTimeFixThr(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits);
 
@@ -73,7 +74,6 @@ public:
   void setEventSetup(const edm::EventSetup& es);
 
 private:
-
   hgcal::RecHitTools recHitTools;
 
   TF1* timeResolution;
@@ -98,10 +98,13 @@ private:
   double keV2fC[2];
   double keV2MIP;
 
-  double noisefC[2];
-  double noiseMIP;
+  double noiseEndOfLife[3];
+  double noiseBegOfLife[3];
 
   //for cell type
+  double noisefC[3];
+  double noiseMIP;
+
   double fCPerMIP[3];
 };
 

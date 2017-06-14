@@ -4,9 +4,8 @@
 #include <TF1.h>
 #include <TCanvas.h>
 #include "TRandom3.h"
-#include <cstdlib>
+#include <cstdlib> 
 #include <ctime>
-
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -32,18 +31,26 @@
 #include "RecoLocalCalo/HGCalRecAlgos/interface/RecHitTools.h"
 
 RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
-
   //  std::cout << " >>> constructor " << std::endl;
   //section type
   keV2fC[0] =  ps.getParameter<double>("HGCEE_keV2fC");
   keV2fC[1] =  ps.getParameter<double>("HGCHEF_keV2fC");
   keV2MIP = ps.getParameter<double>("HGCHB_keV2MIP");
 
+  //cell type
+  noiseEndOfLife[0] = (ps.getParameter<std::vector<double> >("endOfLifeNoises")).at(0);
+  noiseEndOfLife[1] = (ps.getParameter<std::vector<double> >("endOfLifeNoises")).at(1);
+  noiseEndOfLife[2] = (ps.getParameter<std::vector<double> >("endOfLifeNoises")).at(2);
+
+  noiseBegOfLife[0] = (ps.getParameter<std::vector<double> >("nonAgedNoises")).at(0);
+  noiseBegOfLife[1] = (ps.getParameter<std::vector<double> >("nonAgedNoises")).at(1);
+  noiseBegOfLife[2] = (ps.getParameter<std::vector<double> >("nonAgedNoises")).at(2);
+
   noisefC[0] = (ps.getParameter<std::vector<double> >("HGCEE_noisefC")).at(0);
-  noisefC[1] = (ps.getParameter<std::vector<double> >("HGCEF_noisefC")).at(1);
+  noisefC[1] = (ps.getParameter<std::vector<double> >("HGCEE_noisefC")).at(1);
+  noisefC[2] = (ps.getParameter<std::vector<double> >("HGCEE_noisefC")).at(2);
   noiseMIP = ps.getParameter<double>("HGCBH_noiseMIP");
 
-  //cell type
   fCPerMIP[0] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(0);
   fCPerMIP[1] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(1);
   fCPerMIP[2] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(2);
@@ -90,8 +97,7 @@ RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
   cellSize[1] = 1.;
   cellSize[2] = 1.;
 
-
-  timeResolution = new TF1("timeSi100", "sqrt(pow([0]/x/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
+  timeResolution = new TF1("timeSi100", "sqrt(pow([0]/x/sqrt(2.)*sqrt(2.5), 2) + pow([1], 2) )", 1., 1000.);
 }
 
 
@@ -111,7 +117,36 @@ void RecHiTimeEstimator::setOptions(int cellType, float floor, int lifeAge){
     chargeCollEff[0] = 0.5;
     chargeCollEff[1] = 0.5;
     chargeCollEff[2] = 0.7;
+
+    noisefC[0] *= noiseEndOfLife[0] / noiseBegOfLife[0];
+    noisefC[1] *= noiseEndOfLife[1] / noiseBegOfLife[1];
+    noisefC[2] *= noiseEndOfLife[2] / noiseBegOfLife[2];
   }
+}
+
+
+double RecHiTimeEstimator::getExpectedReso(const DetId detid, double energyHit){
+  int thick = (detid.det() != DetId::Forward) ? -1 : recHitTools.getSiThickness(detid) / 100. - 1.;
+  timeResolution->SetParameters(paramA[thick]*cellSize[thick], paramC[thick]);
+
+  int sectionType = -1;
+  if(detid.subdetId() == HGCEE) sectionType = 0;
+  else if(detid.subdetId() == HGCHEF) sectionType = 1;
+  else if(detid.subdetId() == HGCHEB) sectionType = 2;
+
+  float energy = energyHit*chargeCollEff[thick];
+  unsigned int layer = recHitTools.getLayerWithOffset(detid);
+
+  double sigmaNoiseMIP = noiseMIP;
+  if(sectionType != 2) sigmaNoiseMIP = noisefC[thick]/fCPerMIP[thick];
+
+  int energyMIP = 0.;
+  if(sectionType == 2) energyMIP = energy/keV2GeV * keV2MIP;
+  else if(sectionType == 0 || sectionType == 1) energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
+
+  float SoverN = energyMIP / sigmaNoiseMIP;
+  double smearedTime = getTimeHit(thick, SoverN);
+  return smearedTime;
 }
 
 
@@ -123,19 +158,18 @@ double RecHiTimeEstimator::getTimeHit(int thick, double SoverN){
   if(SoverN > 1) sigma = timeResolution->Eval(SoverN);
   if(sigma < floorValue) sigma = floorValue;
 
-  TRandom3* rand = new TRandom3(); 
+  TRandom3* rand = new TRandom3();
   rand->SetSeed(0);
   double smearing = rand->Gaus(0., sigma);
   return smearing;
 }
 
 
-
 double RecHiTimeEstimator::getTimeHitFixThr(){
   //flat resolution at 50ps
   double sigma = 0.05;
 
-  TRandom3* rand = new TRandom3(); 
+  TRandom3* rand = new TRandom3();
   rand->SetSeed(0);
   double smearing = rand->Gaus(0., sigma);
   return smearing;
@@ -169,7 +203,7 @@ void RecHiTimeEstimator::correctTime(const HGCRecHitCollection& rechits, HGCRecH
     unsigned int layer = recHitTools.getLayerWithOffset(detid);
 
     double sigmaNoiseMIP = noiseMIP;
-    if(sectionType != 2) sigmaNoiseMIP = noisefC[sectionType]/fCPerMIP[thick];
+    if(sectionType != 2) sigmaNoiseMIP = noisefC[thick]/fCPerMIP[thick];
 
     int energyMIP = 0.;
     if(sectionType == 2) energyMIP = energy/keV2GeV * keV2MIP;
