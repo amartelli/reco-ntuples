@@ -108,7 +108,7 @@ void RecHiTimeEstimator::setEventSetup(const edm::EventSetup& es){
 
 void RecHiTimeEstimator::setOptions(int cellType, float floor, int lifeAge){
   if(cellType == 1){
-    cellSize[0] = 0.5;
+    cellSize[0] = 1.;
     cellSize[1] = 0.5;
     cellSize[2] = 0.5;
   }
