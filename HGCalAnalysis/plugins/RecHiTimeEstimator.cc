@@ -70,24 +70,33 @@ RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
   keV2MeV = 1e-3;
 
   //100um
-  paramA[0] = 1.00;
+  paramA[0] = 1.;
   parErrA[0] = 0.01;
-  paramC[0] = 0.009;
+  paramC[0] = 0.020;
   parErrC[0] = 0.001;
 
   //200um
-  paramA[1] = 1.06;
-  parErrA[1] = 0.02;
-  paramC[1] = 0.008;
+  paramA[1] = 1.;
+  parErrA[1] = 0.01;
+  paramC[1] = 0.02;
   parErrC[1] = 0.001;
 
   //300um
-  paramA[2] = 1.11;
-  parErrA[2] = 0.02;
-  paramC[2] = 0.010;
+  paramA[2] = 1.;
+  parErrA[2] = 0.01;
+  paramC[2] = 0.020;
   parErrC[2] = 0.001;
 
+  SoverNperMIP[0] = 1./(noisefC[0]/fCPerMIP[0]);
+  SoverNperMIP[1] = 1./(noisefC[1]/fCPerMIP[1]);
+  SoverNperMIP[2] = 1./(noisefC[2]/fCPerMIP[2]);
+
+  fromTBtoHGC[0] = sqrt(2.5) * 3. * 0.5;
+  fromTBtoHGC[1] = sqrt(2.5) * 60./14. * 0.5;
+  fromTBtoHGC[2] = sqrt(2.5) * 4. * 0.5;
+
   floorValue = 0.02;
+  absoluteTrend = 1.;
 
   chargeCollEff[0] = 1.;
   chargeCollEff[1] = 1.;
@@ -97,7 +106,7 @@ RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
   cellSize[1] = 1.;
   cellSize[2] = 1.;
 
-  timeResolution = new TF1("timeSi100", "sqrt(pow([0]/x/sqrt(2.)*sqrt(2.5), 2) + pow([1], 2) )", 1., 1000.);
+  timeResolution = new TF1("timeSi100", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
 }
 
 
@@ -106,13 +115,15 @@ void RecHiTimeEstimator::setEventSetup(const edm::EventSetup& es){
 }
 
 
-void RecHiTimeEstimator::setOptions(int cellType, float floor, int lifeAge){
+void RecHiTimeEstimator::setOptions(int cellType, float floor, int lifeAge, float absTrend){
   if(cellType == 1){
     cellSize[0] = 1.;
     cellSize[1] = 0.5;
     cellSize[2] = 0.5;
   }
-  if(floor != 0.02) floorValue = floor;
+  if(floor == 0.03) {
+    floorValue = floor;
+  }
   if(lifeAge == 1){
     chargeCollEff[0] = 0.5;
     chargeCollEff[1] = 0.5;
@@ -121,7 +132,26 @@ void RecHiTimeEstimator::setOptions(int cellType, float floor, int lifeAge){
     noisefC[0] *= noiseEndOfLife[0] / noiseBegOfLife[0];
     noisefC[1] *= noiseEndOfLife[1] / noiseBegOfLife[1];
     noisefC[2] *= noiseEndOfLife[2] / noiseBegOfLife[2];
+
+    SoverNperMIP[0] = 1./(noisefC[0]/fCPerMIP[0]);
+    SoverNperMIP[1] = 1./(noisefC[1]/fCPerMIP[1]);
+    SoverNperMIP[2] = 1./(noisefC[2]/fCPerMIP[2]);
   }
+  if(absTrend == 1.5){
+    absoluteTrend = absTrend;
+  }
+  if(absTrend == 2.){
+    absoluteTrend = absTrend;
+  }
+
+  paramC[0] = floor;
+  paramC[1] = floor;
+  paramC[2] = floor;
+
+  paramA[0] = absoluteTrend;
+  paramA[1] = absoluteTrend;
+  paramA[2] = absoluteTrend;
+
 }
 
 
@@ -243,6 +273,8 @@ void RecHiTimeEstimator::correctTimeFixThr(const HGCRecHitCollection& rechits, H
 
       continue;
     }
+
+    energy = it_hit->energy()*chargeCollEff[thick];
 
     unsigned int layer = recHitTools.getLayerWithOffset(detid);
 
