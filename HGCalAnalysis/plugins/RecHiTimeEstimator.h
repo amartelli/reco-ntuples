@@ -60,7 +60,7 @@ public:
   void correctTime(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits);
   void correctTimeFixThr(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits);
 
-  void setOptions(int cellType = 0, float floor = 0.02, int lifeAge = 0);
+  void setOptions(int cellType = 0, float floor = 0.02, int lifeAge = 0, float absTrend=1.);
 
   /* void timeCSF20LB(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits); */
   /* void timeCSF30LB(const HGCRecHitCollection& rechits, HGCRecHitCollection* Newrechits); */
@@ -78,12 +78,16 @@ private:
 
   TF1* timeResolution;
 
+  float fromTBtoHGC[3];
+  float SoverNperMIP[3];
+
   float paramA[3];
   float parErrA[3];
   float paramC[3];
   float parErrC[3];
 
   float floorValue;
+  float absoluteTrend;
 
   float chargeCollEff[3];
 
