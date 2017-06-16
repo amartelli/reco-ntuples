@@ -7,8 +7,8 @@
 
 void plotTimingResolution(){
 
-  int iColors[3] = {kBlack, kRed, kBlue};
-  int iColors05[3] = {kGray+1, kRed+2, kAzure-2};
+  int iColors[3] = {kBlack, kRed, kBlue+2};
+  int iColorsHG[3] = {kGray+3, kRed+2, kAzure-2};
 
 
   //from TB
@@ -24,139 +24,278 @@ void plotTimingResolution(){
   float paramC_MIP[3];
   float parErrC_MIP[3];
 
+  float parX[3];
+  parX[0] = 1.;
+  parX[1] = 1.5;
+  parX[2] = 2.;
+
   //100um
   paramA[0] = 1.00;
   parErrA[0] = 0.01;
-  paramC[0] = 0.009;
+  paramC[0] = 0.02;
   parErrC[0] = 0.001;
 
   paramA_MIP[0] = 0.69;
   parErrA_MIP[0] = 0.01;
-  paramC_MIP[0] = 0.010;
+  paramC_MIP[0] = 0.020;
   parErrC_MIP[0] = 0.001;
 
   //200um  
   paramA[1] = 1.06;
   parErrA[1] = 0.02;
-  paramC[1] = 0.008;
+  paramC[1] = 0.02;
   parErrC[1] = 0.001;
 
   paramA_MIP[1] = 0.38;
   parErrA_MIP[1] = 0.01;
-  paramC_MIP[1] = 0.009;
+  paramC_MIP[1] = 0.02;
   parErrC_MIP[1] = 0.001;
 
   //300um 
   paramA[2] = 1.11;
   parErrA[2] = 0.02;
-  paramC[2] = 0.010;
+  paramC[2] = 0.020;
   parErrC[2] = 0.001;
 
   paramA_MIP[2] = 0.34;
   parErrA_MIP[2] = 0.01;
-  paramC_MIP[2] = 0.010;
+  paramC_MIP[2] = 0.020;
   parErrC_MIP[2] = 0.001;
 
-  //noise
-  noise[0] = 0.269;
-  noise[1] = 0.131;
-  noise[2] = 0.066;
-  //SoverN
-  // noise[0] = 1.42;
-  // noise[1] = 2.65;
-  // noise[2] = 3.2;
+
+  float fromTBtoHGC[3];
+  fromTBtoHGC[0] = sqrt(2.5) * 3. * 0.5;
+  fromTBtoHGC[1] = sqrt(2.5) * 60./14. * 0.5;
+  fromTBtoHGC[2] = sqrt(2.5) * 4. * 0.5;
+
+
+  float SoverNperMIP[3];
+  SoverNperMIP[0] = 1./0.269;
+  SoverNperMIP[1] = 1./0.131;
+  SoverNperMIP[2] = 1./0.066;
+
+
+  TF1* TB_MIP_100 = new TF1("TB_MIP_100", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* TB_MIP_200 = new TF1("TB_MIP_200", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* TB_MIP_300 = new TF1("TB_MIP_300", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+
+  TF1* TB_SoN_100 = new TF1("TB_SoN_100", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* TB_SoN_200 = new TF1("TB_SoN_200", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* TB_SoN_300 = new TF1("TB_SoN_300", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+
+
+  TF1* HGC_MIP_100 = new TF1("HGC_MIP_100", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* HGC_MIP_200 = new TF1("HGC_MIP_200", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* HGC_MIP_300 = new TF1("HGC_MIP_300", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+
+  TF1* HGC_SoN_100 = new TF1("HGC_SoN_100", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* HGC_SoN_200 = new TF1("HGC_SoN_200", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* HGC_SoN_300 = new TF1("HGC_SoN_300", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+
+
+  TF1* X_SoN_100 = new TF1("X_SoN_100", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* X_SoN_200 = new TF1("X_SoN_200", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* X_SoN_300 = new TF1("X_SoN_300", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* X_MIP_100 = new TF1("X_MIP_100", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* X_MIP_200 = new TF1("X_MIP_200", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
+  TF1* X_MIP_300 = new TF1("X_MIP_300", "sqrt(pow([0]/x, 2) + pow([1], 2) )", 1., 1000.);
 
 
 
-  TF1* timeResolution_100 = new TF1("timeSi100", "sqrt(pow([0]/x/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-  TF1* timeResolution_200 = new TF1("timeSi200", "sqrt(pow([0]/x/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-  TF1* timeResolution_300 = new TF1("timeSi300", "sqrt(pow([0]/x/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-
-  TF1* timeMIP_100 = new TF1("timeMIP_100", "sqrt(pow([0]/x*1.42/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-  TF1* timeMIP_200 = new TF1("timeMIP_200", "sqrt(pow([0]/x*2.65/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-  TF1* timeMIP_300 = new TF1("timeMIP_300", "sqrt(pow([0]/x*3.2/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-
-
-  //new option
-  TF1* timeResolution05_100 = new TF1("timeSi100_05", "sqrt(pow([0]/x/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-  TF1* timeResolution05_200 = new TF1("timeSi200_05", "sqrt(pow([0]/x/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-  TF1* timeResolution05_300 = new TF1("timeSi300_05", "sqrt(pow([0]/x/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-
-  TF1* timeMIP05_100 = new TF1("timeMIP05_100", "sqrt(pow([0]/x*1.42/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-  TF1* timeMIP05_200 = new TF1("timeMIP05_200", "sqrt(pow([0]/x*2.65/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
-  TF1* timeMIP05_300 = new TF1("timeMIP05_300", "sqrt(pow([0]/x*3.2/sqrt(2.), 2) + pow([1], 2) )", 1., 1000.);
+  X_SoN_100->SetParameters(parX[0], paramC_MIP[0]);
+  X_SoN_200->SetParameters(parX[1], paramC_MIP[1]);
+  X_SoN_300->SetParameters(parX[2], paramC_MIP[2]);
+  X_MIP_100->SetParameters(parX[0]/SoverNperMIP[0], paramC_MIP[0]);
+  X_MIP_200->SetParameters(parX[1]/SoverNperMIP[1], paramC_MIP[1]);
+  X_MIP_300->SetParameters(parX[2]/SoverNperMIP[2], paramC_MIP[2]);
 
 
-  TCanvas* cTB = new TCanvas(); 
+  X_SoN_100->SetLineColor(iColors[0]);
+  X_SoN_200->SetLineColor(iColors[1]);
+  X_SoN_300->SetLineColor(iColors[2]);
+  X_SoN_100->SetLineStyle(2);
+  X_SoN_200->SetLineStyle(2);
+  X_SoN_300->SetLineStyle(2);
+
+  X_MIP_100->SetLineColor(iColors[0]);
+  X_MIP_200->SetLineColor(iColors[1]);
+  X_MIP_300->SetLineColor(iColors[2]);
+  X_MIP_100->SetLineStyle(2);
+  X_MIP_200->SetLineStyle(2);
+  X_MIP_300->SetLineStyle(2);
+
+
+  TB_MIP_100->SetParameters(paramA_MIP[0]/sqrt(2.), paramC_MIP[0]);
+  TB_MIP_200->SetParameters(paramA_MIP[1]/sqrt(2.), paramC_MIP[1]);
+  TB_MIP_300->SetParameters(paramA_MIP[2]/sqrt(2.), paramC_MIP[2]);
+  TB_MIP_100->SetLineColor(iColors[0]);
+  TB_MIP_200->SetLineColor(iColors[1]);
+  TB_MIP_300->SetLineColor(iColors[2]);
+
+
+  HGC_MIP_100->SetParameters(paramA_MIP[0]/sqrt(2.)*fromTBtoHGC[0], paramC_MIP[0]);
+  HGC_MIP_200->SetParameters(paramA_MIP[1]/sqrt(2.)*fromTBtoHGC[1], paramC_MIP[1]);
+  HGC_MIP_300->SetParameters(paramA_MIP[2]/sqrt(2.)*fromTBtoHGC[2], paramC_MIP[2]);
+  HGC_MIP_100->SetLineColor(iColorsHG[0]);
+  HGC_MIP_200->SetLineColor(iColorsHG[1]);
+  HGC_MIP_300->SetLineColor(iColorsHG[2]);
+
+
+  TB_SoN_100->SetParameters(paramA[0]/sqrt(2.), paramC[0]);
+  TB_SoN_200->SetParameters(paramA[1]/sqrt(2.), paramC[1]);
+  TB_SoN_300->SetParameters(paramA[2]/sqrt(2.), paramC[2]);
+  TB_SoN_100->SetLineColor(iColors[0]);
+  TB_SoN_200->SetLineColor(iColors[1]);
+  TB_SoN_300->SetLineColor(iColors[2]);
+
+
+  HGC_SoN_100->SetParameters(paramA_MIP[0]/sqrt(2.)*SoverNperMIP[0]*fromTBtoHGC[0], paramC[0]);
+  HGC_SoN_200->SetParameters(paramA_MIP[1]/sqrt(2.)*SoverNperMIP[1]*fromTBtoHGC[1], paramC[1]);
+  HGC_SoN_300->SetParameters(paramA_MIP[2]/sqrt(2.)*SoverNperMIP[2]*fromTBtoHGC[2], paramC[2]);
+  HGC_SoN_100->SetLineColor(iColorsHG[0]);
+  HGC_SoN_200->SetLineColor(iColorsHG[1]);
+  HGC_SoN_300->SetLineColor(iColorsHG[2]);
+
+
+  gStyle->SetOptTitle(0);
+
+
+  TLatex tBX;
+  tBX.SetNDC();
+  tBX.SetTextSize(0.05);
+  tBX.SetTextFont(132);
+
+  TLatex tB100;
+  tB100.SetNDC();
+  tB100.SetTextSize(0.05);
+  tB100.SetTextFont(132);
+  tB100.SetTextColor(iColors[0]);
+
+  TLatex tB200;
+  tB200.SetNDC();
+  tB200.SetTextSize(0.05);
+  tB200.SetTextFont(132);
+  tB200.SetTextColor(iColors[1]);
+
+  TLatex tB300;
+  tB300.SetNDC();
+  tB300.SetTextSize(0.05);
+  tB300.SetTextFont(132);
+  tB300.SetTextColor(iColors[2]);
+
+  TLatex tH100;
+  tH100.SetNDC();
+  tH100.SetTextSize(0.05);
+  tH100.SetTextFont(132);
+  tH100.SetTextColor(iColorsHG[0]);
+
+  TLatex tH200;
+  tH200.SetNDC();
+  tH200.SetTextSize(0.05);
+  tH200.SetTextFont(132);
+  tH200.SetTextColor(iColorsHG[1]);
+
+  TLatex tH300;
+  tH300.SetNDC();
+  tH300.SetTextSize(0.05);
+  tH300.SetTextFont(132);
+  tH300.SetTextColor(iColorsHG[2]);
+
+
+  TCanvas* cMIP = new TCanvas(); 
   gPad->SetLogx();
   gPad->SetLogy();
+  gPad->SetGrid();
+  TB_MIP_100->SetRange(1, 1000);
+  TB_MIP_100->GetXaxis()->SetTitle("MIP");
+  TB_MIP_100->GetYaxis()->SetRangeUser(0.005, 1.);
+  TB_MIP_100->GetYaxis()->SetTitle("#sigma(t) [ns]");
+  cMIP->cd();
+  TB_MIP_100->Draw();
+  TB_MIP_200->Draw("same");
+  TB_MIP_300->Draw("same");
+  HGC_MIP_100->Draw("same");
+  HGC_MIP_200->Draw("same");
+  HGC_MIP_300->Draw("same");
 
-  timeResolution_100->SetParameters(paramA[0], paramC[0]);
-  timeResolution_200->SetParameters(paramA[1], paramC[1]);
-  timeResolution_300->SetParameters(paramA[2], paramC[2]);
+  X_MIP_100->Draw("same");
+  X_MIP_200->Draw("same");
+  X_MIP_300->Draw("same");
 
-  timeResolution_100->SetLineColor(iColors[0]);
-  timeResolution_200->SetLineColor(iColors[1]);
-  timeResolution_300->SetLineColor(iColors[2]);
+  tBX.DrawLatex(0.45,0.85, "#sigma(t) [ns] = A/x #oplus C");
+  tH100.DrawLatex(0.5,0.77, Form("HGC 100um A = %.2f C = %.3f", HGC_MIP_100->GetParameter(0), HGC_MIP_100->GetParameter(1)));
+  tH200.DrawLatex(0.5,0.72, Form("HGC 200um A = %.2f C = %.3f", HGC_MIP_200->GetParameter(0), HGC_MIP_200->GetParameter(1)));
+  tH300.DrawLatex(0.5,0.67, Form("HGC 300um A = %.2f C = %.3f", HGC_MIP_300->GetParameter(0), HGC_MIP_300->GetParameter(1)));
 
-  timeResolution_100->SetRange(1, 200);
+  tB100.DrawLatex(0.5,0.60, Form("TB 100um A = %.2f C = %.3f", TB_MIP_100->GetParameter(0), TB_MIP_100->GetParameter(1)));
+  tB200.DrawLatex(0.5,0.55, Form("TB 200um A = %.2f C = %.3f", TB_MIP_200->GetParameter(0), TB_MIP_200->GetParameter(1)));
+  tB300.DrawLatex(0.5,0.50, Form("TB 300um A = %.2f C = %.3f", TB_MIP_300->GetParameter(0), TB_MIP_300->GetParameter(1)));
+  cMIP->Print("timeResolution_singleSensor_MIP.png", "png");
 
-  timeMIP_100->SetParameters(paramA_MIP[0], paramC_MIP[0]);
-  timeMIP_200->SetParameters(paramA_MIP[1], paramC_MIP[1]);
-  timeMIP_300->SetParameters(paramA_MIP[2], paramC_MIP[2]);
+  std::cout << " 100 X A = " << X_MIP_100->GetParameter(0) << std::endl;
+  std::cout << " 200 X A = " << X_MIP_200->GetParameter(0) << std::endl;
+  std::cout << " 300 X A = " << X_MIP_300->GetParameter(0) << std::endl;
 
-  timeMIP_100->SetLineColor(iColors[0]);
-  timeMIP_200->SetLineColor(iColors[1]);
-  timeMIP_300->SetLineColor(iColors[2]);
-  timeMIP_100->SetLineStyle(2);
-  timeMIP_200->SetLineStyle(2);
-  timeMIP_300->SetLineStyle(2);
 
-  //////////////////////////////////////////////////
-  timeResolution05_100->SetParameters(paramA[0]/2., paramC[0]);
-  timeResolution05_200->SetParameters(paramA[1]/2., paramC[1]);
-  timeResolution05_300->SetParameters(paramA[2]/2., paramC[2]);
+  TCanvas* cSoN = new TCanvas();
+  gPad->SetLogx();
+  gPad->SetLogy();
+  gPad->SetGrid();
+  cSoN->cd();
+  TB_SoN_100->SetRange(1, 1000);
+  TB_SoN_100->GetXaxis()->SetTitle("S/N");
+  TB_SoN_100->GetYaxis()->SetRangeUser(0.005, 1.);
+  TB_SoN_100->GetYaxis()->SetTitle("#sigma(t) [ns]");
+  cSoN->cd();
+  TB_SoN_100->Draw();
+  TB_SoN_200->Draw("same");
+  TB_SoN_300->Draw("same");
+  HGC_SoN_100->Draw("same");
+  HGC_SoN_200->Draw("same");
+  HGC_SoN_300->Draw("same");
+  X_SoN_100->Draw("same");
+  X_SoN_200->Draw("same");
+  X_SoN_300->Draw("same");
 
-  timeResolution05_100->SetLineColor(iColors05[0]);
-  timeResolution05_200->SetLineColor(iColors05[1]);
-  timeResolution05_300->SetLineColor(iColors05[2]);
+  tBX.DrawLatex(0.45,0.85, "#sigma(t) [ns] = A/x #oplus C");
+  tH100.DrawLatex(0.5,0.77, Form("HGC 100um A = %.2f C = %.3f", HGC_SoN_100->GetParameter(0), HGC_SoN_100->GetParameter(1)));
+  tH200.DrawLatex(0.5,0.72, Form("HGC 200um A = %.2f C = %.3f", HGC_SoN_200->GetParameter(0), HGC_SoN_200->GetParameter(1)));
+  tH300.DrawLatex(0.5,0.67, Form("HGC 300um A = %.2f C = %.3f", HGC_SoN_300->GetParameter(0), HGC_SoN_300->GetParameter(1)));
 
-  timeResolution05_100->SetRange(1, 200);
+  tB100.DrawLatex(0.5,0.60, Form("TB 100um A = %.2f C = %.3f", TB_SoN_100->GetParameter(0), TB_SoN_100->GetParameter(1)));
+  tB200.DrawLatex(0.5,0.55, Form("TB 200um A = %.2f C = %.3f", TB_SoN_200->GetParameter(0), TB_SoN_200->GetParameter(1)));
+  tB300.DrawLatex(0.5,0.50, Form("TB 300um A = %.2f C = %.3f", TB_SoN_300->GetParameter(0), TB_SoN_300->GetParameter(1)));
+  cSoN->Print("timeResolution_singleSensor_SoN.png", ".png");
 
-  timeMIP05_100->SetParameters(paramA_MIP[0]/2., paramC_MIP[0]);
-  timeMIP05_200->SetParameters(paramA_MIP[1]/2., paramC_MIP[1]);
-  timeMIP05_300->SetParameters(paramA_MIP[2]/2., paramC_MIP[2]);
 
-  timeMIP05_100->SetLineColor(iColors05[0]);
-  timeMIP05_200->SetLineColor(iColors05[1]);
-  timeMIP05_300->SetLineColor(iColors05[2]);
-  timeMIP05_100->SetLineStyle(2);
-  timeMIP05_200->SetLineStyle(2);
-  timeMIP05_300->SetLineStyle(2);
+  /*
+  TLegend *legTGM = new TLegend(0.65,0.5,0.80,0.85,NULL,"brNDC");
+  legTGM->SetTextFont(42);
+  legTGM->SetTextSize(0.05);
+  legTGM->SetFillColor(kWhite);
+  legTGM->SetLineColor(kWhite);
+  legTGM->SetShadowColor(kWhite);
+  legTGM->AddEntry(timeResolution_300, "#sigma(t) from TB - cell 1cm^{2}", "l");
+  legTGM->AddEntry(timeMIP_300, "j = 1.2ns/fC - 300um", "l");
+  legTGM->AddEntry(timeResolution05_300, "#sigma(t) - cell 0.5cm^{2}", "l");
+  legTGM->AddEntry(timeMIP05_300, "j = 0.6ns/fC - 300um", "l");
 
-  cTB->cd();
-  timeResolution_100->Draw();
-  timeResolution_200->Draw("same");
-  timeResolution_300->Draw("same");
-  timeMIP_100->Draw("same");
-  timeMIP_200->Draw("same");
+  TCanvas* cTB_100 = new TCanvas();
+  gPad->SetLogx();
+  gPad->SetLogy();
+  cTB_100->cd();
+  timeResolution_300->GetYaxis()->SetRangeUser(0.005, 1.);
+  timeResolution_300->GetYaxis()->SetTitle("#sigma(t) (ns)");
+  timeResolution_300->GetXaxis()->SetTitle("S/N");
+  timeResolution_300->Draw();
   timeMIP_300->Draw("same");
-
-  //  cTB_05->cd();
-  timeResolution05_100->Draw("same");
-  timeResolution05_200->Draw("same");
   timeResolution05_300->Draw("same");
-  timeMIP05_100->Draw("same");
-  timeMIP05_200->Draw("same");
   timeMIP05_300->Draw("same");
+  legTGM->Draw("same");
+  cTB_100->Print("timeResolution_TB_300.png", "png");
+  */
 
-  cTB->Print("timeResolution_TB.png", "png");
 
-  // TCanvas* cTB_05 = new TCanvas(); 
-  // gPad->SetLogx();
-  // gPad->SetLogy();
-
-  //  cTB_05->Print("timeResolution_TB_half.png", "png");
 
 
 
