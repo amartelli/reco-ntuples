@@ -175,8 +175,12 @@ double RecHiTimeEstimator::getExpectedReso(const DetId detid, double energyHit){
   else if(sectionType == 0 || sectionType == 1) energyMIP = energy/scaleCorrection.at(thick)/keV2GeV / (weights.at(layer)/keV2MeV);
 
   float SoverN = energyMIP / sigmaNoiseMIP;
-  double smearedTime = getTimeHit(thick, SoverN);
-  return smearedTime;
+
+  timeResolution->SetParameters(paramA[thick]*cellSize[thick], paramC[thick]);
+  double sigma = 0.2;
+  if(SoverN > 1) sigma = timeResolution->Eval(SoverN);
+  if(sigma < floorValue) sigma = floorValue;
+  return sigma;
 }
 
 
