@@ -51,6 +51,10 @@ RecHiTimeEstimator::RecHiTimeEstimator(const edm::ParameterSet& ps){
   noisefC[2] = (ps.getParameter<std::vector<double> >("HGCEE_noisefC")).at(2);
   noiseMIP = ps.getParameter<double>("HGCBH_noiseMIP");
 
+  noisefC_bkp[0] = (ps.getParameter<std::vector<double> >("HGCEE_noisefC")).at(0);
+  noisefC_bkp[1] = (ps.getParameter<std::vector<double> >("HGCEE_noisefC")).at(1);
+  noisefC_bkp[2] = (ps.getParameter<std::vector<double> >("HGCEE_noisefC")).at(2);
+
   fCPerMIP[0] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(0);
   fCPerMIP[1] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(1);
   fCPerMIP[2] =  (ps.getParameter<std::vector<double> >("HGCEE_fCPerMIP")).at(2);
@@ -129,9 +133,9 @@ void RecHiTimeEstimator::setOptions(int cellType, float floor, int lifeAge, floa
     chargeCollEff[1] = 0.5;
     chargeCollEff[2] = 0.7;
 
-    noisefC[0] *= noiseEndOfLife[0] / noiseBegOfLife[0];
-    noisefC[1] *= noiseEndOfLife[1] / noiseBegOfLife[1];
-    noisefC[2] *= noiseEndOfLife[2] / noiseBegOfLife[2];
+    noisefC[0] = noisefC_bkp[0] * noiseEndOfLife[0] / noiseBegOfLife[0];
+    noisefC[1] = noisefC_bkp[1] * noiseEndOfLife[1] / noiseBegOfLife[1];
+    noisefC[2] = noisefC_bkp[2] * noiseEndOfLife[2] / noiseBegOfLife[2];
 
     SoverNperMIP[0] = 1./(noisefC[0]/fCPerMIP[0]);
     SoverNperMIP[1] = 1./(noisefC[1]/fCPerMIP[1]);
@@ -190,7 +194,7 @@ double RecHiTimeEstimator::getTimeHit(int thick, double SoverN){
   //resolution from TB results with floor of 20ps at high S/N
   double sigma = 0.2;
   if(SoverN > 1) sigma = timeResolution->Eval(SoverN);
-  if(sigma < floorValue) sigma = floorValue;
+  if(sigma < floorValue || SoverN > 1000.) sigma = floorValue;
 
   TRandom3* rand = new TRandom3();
   rand->SetSeed(0);
